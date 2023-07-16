@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:path_validation/models/zone_details.dart';
+import 'package:path_validation/submit_form.dart';
 
 enum PathTypeEnum { Path_is_ok, Path_is_not_ok }
 
@@ -46,7 +48,7 @@ class _DataEntryFormState extends State<DataEntryForm> {
   }
 
   // declare enums here
-  PathTypeEnum? _pathTypeEnum;
+  // PathTypeEnum? _pathTypeEnum;
 
   // declare controllers here
   final TextEditingController _date_picked_Controller = TextEditingController();
@@ -63,6 +65,8 @@ class _DataEntryFormState extends State<DataEntryForm> {
 
   String? _selected_plant = "";
   String? _selected_zone = "";
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +93,7 @@ class _DataEntryFormState extends State<DataEntryForm> {
           const Text("Zone Data Entry", 
           
           textAlign: TextAlign.center,
-          
+
           style: TextStyle(
             fontFamily: "Roboto", 
             fontSize: 22, 
@@ -101,231 +105,232 @@ class _DataEntryFormState extends State<DataEntryForm> {
 
           const SizedBox(height: 20,),
 
-          // select plant
-          DropdownButtonFormField(
+          /* Form for data entry */ 
+          Form(
 
-            // add some decoration to the drop down menu
-            decoration: const InputDecoration(
-              labelText: "Select Plant",
-              prefixIcon: Icon(
-                Icons.factory_rounded,
-                color: Colors.deepPurple,
-              ),
-              border: OutlineInputBorder(),
-            ),
-
-            // list of items to show in the plant drop down menu
-            items: _plantList
-                .map((plant) => DropdownMenuItem(
-                      value: plant,
-                      child: Text(plant),
-                    ))
-                .toList(),
-
-            // what happens when a value is selected
-            onChanged: (value) {
-              setState(() {
-                _selected_plant = value as String;
-              });
-            },
-          ),
-        
-          const SizedBox(height: 40,),
-
-          // select date
-          TextFormField(
-
-            controller: _date_picked_Controller,
-
-            readOnly: true,
-
-            onTap: () => _select_date(),
-
-
-            decoration: const InputDecoration(
-              labelText: "Select Date",
-              prefixIcon: Icon(
-                Icons.calendar_month_rounded,
-                color: Colors.deepPurple
-              ),
-              border: OutlineInputBorder(),
-            ),
-          ),
-
-          const SizedBox(height: 40,),
-
-          // select zone
-          DropdownButtonFormField(
-
-            // add some decoration to the drop down menu
-            decoration: const InputDecoration(
-              labelText: "Select Zone",
-              prefixIcon: Icon(
-                Icons.room_rounded,
-                color: Colors.deepPurple,
-              ),
-              border: OutlineInputBorder(),
-            ),
-
-            // list of items to show in the plant drop down menu
-            items: _zoneList
-                .map((zone) => DropdownMenuItem(
-                      value: zone,
-                      child: Text(zone),
-                    ))
-                .toList(),
-
-            // what happens when a value is selected
-            onChanged: (value) {
-              setState(() {
-                _selected_zone = value as String;
-              });
-            },
-          ),
-
-          const SizedBox(height: 40,),
-
-          TextFormField(
-
-            controller: _zone_leader_Controller,
-
-            decoration: const InputDecoration(
-              labelText: "Enter Zone Leader",
-              prefixIcon: Icon(
-                Icons.person,
-                color: Colors.deepPurple
-              ),
-              border: OutlineInputBorder(),
-            ),
-          ),
-        
-          const SizedBox(height: 40,),
-
-          // button for clicking picture
-          Align(
-
-            child: SizedBox(
-
-              width: 150,
-              height: 50,
-
-              child: ElevatedButton(
-              
-                onPressed: () {},
-                
-                child: const Text('Click Picture'),
-                
-              ),
-
-            ),
-          ),
-        
-          const SizedBox(height: 40,),
-        
-          // Row(
-          //   children: [
-
-          //           Expanded(
-          //             child: RadioListTile<PathTypeEnum>(
-
-
-                    
-          //               contentPadding: EdgeInsets.all(0.0),
-                    
-          //               title: const Text("OK"),
-
-          //               tileColor: Color.fromARGB(255, 198, 255, 133),
-
-          //               shape: RoundedRectangleBorder(
-          //                 borderRadius: BorderRadius.circular(40.0)
-          //               ),
-                    
-          //               value: PathTypeEnum.Path_is_ok, 
-          //               groupValue: _pathTypeEnum, 
-                    
-          //               onChanged: (value) {
-          //                 setState(() {
-          //                   _pathTypeEnum = value;
-          //                 });
-          //               },
-                    
-          //             ),
-          //           ),
-
-          //           SizedBox(width: 20.0,),
-
-          //           Expanded(
-          //             child: RadioListTile<PathTypeEnum>(
-                    
-          //               contentPadding: EdgeInsets.all(0.0),
-                    
-          //               title: const Text("Not OK"),
-
-          //               tileColor: Color.fromARGB(255, 255, 154, 154),
-
-          //               shape: RoundedRectangleBorder(
-          //                 borderRadius: BorderRadius.circular(40.0)
-          //               ),
-                    
-          //               value: PathTypeEnum.Path_is_not_ok, 
-          //               groupValue: _pathTypeEnum, 
-                    
-          //               onChanged: (value) {
-          //                 setState(() {
-          //                   _pathTypeEnum = value;
-          //                 });
-          //               },
-                    
-          //             ),
-          //           ),
-          //   ],
-          // ),
-
-          // OK and Not OK buttons
-          Row(
-
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-
-            children: [
-
-              ElevatedButton(
-
-                style: ElevatedButton.styleFrom(
-
-                  textStyle: TextStyle(fontWeight: FontWeight.bold),
-
-                  backgroundColor: const Color.fromARGB(255, 71, 221, 76),
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size(100, 50),
-                ),
-                
-                onPressed: () {},
-                child: const Text("OK"),
-
-              ),
-
-              SizedBox(width: 50,),
-
-              ElevatedButton(
-
-                style: ElevatedButton.styleFrom(
-
-                  textStyle: TextStyle(fontWeight: FontWeight.bold),
-
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size(100, 50),
-                ),
-
-                onPressed: () {},
-                child: const Text("Not OK"),
-                
-              ),
-            ],
-
-          )
-
+            key: _formKey,
           
+            child: Column(
+
+              children: [
+
+                // select plant
+                DropdownButtonFormField(
+
+                  // add some decoration to the drop down menu
+                  decoration: const InputDecoration(
+                    labelText: "Select Plant",
+                    prefixIcon: Icon(
+                      Icons.factory_rounded,
+                      color: Colors.deepPurple,
+                    ),
+                    border: OutlineInputBorder(),
+                  ),
+
+                  // list of items to show in the plant drop down menu
+                  items: _plantList
+                      .map((plant) => DropdownMenuItem(
+                            value: plant,
+                            child: Text(plant),
+                          ))
+                      .toList(),
+
+                  // what happens when a value is selected
+                  onChanged: (value) {
+                    setState(() {
+                      _selected_plant = value as String;
+                    });
+                  },
+                ),
+              
+                const SizedBox(height: 40,),
+
+                // select date
+                TextFormField(
+
+                  controller: _date_picked_Controller,
+
+                  readOnly: true,
+
+                  onTap: () => _select_date(),
+
+
+                  decoration: const InputDecoration(
+                    labelText: "Select Date",
+                    prefixIcon: Icon(
+                      Icons.calendar_month_rounded,
+                      color: Colors.deepPurple
+                    ),
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+
+                const SizedBox(height: 40,),
+
+                // select zone
+                DropdownButtonFormField(
+
+                  // add some decoration to the drop down menu
+                  decoration: const InputDecoration(
+                    labelText: "Select Zone",
+                    prefixIcon: Icon(
+                      Icons.room_rounded,
+                      color: Colors.deepPurple,
+                    ),
+                    border: OutlineInputBorder(),
+                  ),
+
+                  // list of items to show in the plant drop down menu
+                  items: _zoneList
+                      .map((zone) => DropdownMenuItem(
+                            value: zone,
+                            child: Text(zone),
+                          ))
+                      .toList(),
+
+                  // what happens when a value is selected
+                  onChanged: (value) {
+                    setState(() {
+                      _selected_zone = value as String;
+                    });
+                  },
+                ),
+
+                const SizedBox(height: 40,),
+
+                TextFormField(
+
+                  controller: _zone_leader_Controller,
+
+                  decoration: const InputDecoration(
+                    labelText: "Enter Zone Leader",
+                    prefixIcon: Icon(
+                      Icons.person,
+                      color: Colors.deepPurple
+                    ),
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              
+                const SizedBox(height: 40,),
+
+                // button for clicking picture
+                Align(
+
+                  child: SizedBox(
+
+                    width: 150,
+                    height: 50,
+
+                    child: ElevatedButton(
+                    
+                      onPressed: () {},
+                      
+                      child: const Text('Click Picture'),
+                      
+                    ),
+
+                  ),
+                ),
+              
+                const SizedBox(height: 40,),
+              
+                // buttons for ok and not ok
+                Row(
+
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
+                  children: [
+
+                    // OK button
+                    ElevatedButton(
+
+                      style: ElevatedButton.styleFrom(
+
+                        textStyle: TextStyle(fontWeight: FontWeight.bold),
+
+                        backgroundColor: const Color.fromARGB(255, 71, 221, 76),
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(100, 50),
+                      ),
+                      
+                      onPressed: () {
+
+                        if (_formKey.currentState!.validate()) {
+
+                          ZoneDetails zoneDetails = ZoneDetails();
+
+                          zoneDetails.plantName = _selected_plant!;
+                          zoneDetails.datePicked = _date_picked_Controller.text;
+                          zoneDetails.zoneName = _selected_zone!;
+                          zoneDetails.zoneLeader = _zone_leader_Controller.text;
+                          zoneDetails.pathType = "OK";
+
+                          // Go to submit page
+                          Navigator.push(context, MaterialPageRoute(builder: (context) {
+
+                            // return Details(zoneDetails: zoneDetails);
+                            return ZoneDetailsSubmitForm(zoneDetails: zoneDetails,);
+
+                          }));
+
+                        }
+
+                      },
+                      child: const Text("OK"),
+
+                    ),
+
+                    SizedBox(width: 50,),
+
+                    // Not OK Button
+                    ElevatedButton(
+
+                      style: ElevatedButton.styleFrom(
+
+                        textStyle: TextStyle(fontWeight: FontWeight.bold),
+
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(100, 50),
+                      ),
+
+                      onPressed: () {
+
+                        if (_formKey.currentState!.validate()) {
+
+                          ZoneDetails zoneDetails = ZoneDetails();
+
+                          zoneDetails.plantName = _selected_plant!;
+                          zoneDetails.datePicked = _date_picked_Controller.text;
+                          zoneDetails.zoneName = _selected_zone!;
+                          zoneDetails.zoneLeader = _zone_leader_Controller.text;
+                          zoneDetails.pathType = "Not OK";
+
+                          // Go to submit page
+                          Navigator.push(context, MaterialPageRoute(builder: (context) {
+
+                            // return Details(zoneDetails: zoneDetails);
+                            return ZoneDetailsSubmitForm(zoneDetails: zoneDetails,);
+
+                          }));
+
+                        }
+
+                      },
+                      child: const Text("Not OK"),
+                      
+                    ),
+                  ],
+
+                )
+
+              ],
+
+            )
+          
+          ),
+
         ],
       ),
     );

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:flutter/services.dart';
+
 import 'package:path_validation/models/zone_details.dart';
 import 'package:path_validation/submit_form.dart';
 
@@ -44,6 +48,30 @@ class _DataEntryFormState extends State<DataEntryForm> {
       setState(() {
         _date_picked_Controller.text = DateFormat('dd-MMMM-yyyy').format(datePicked);
       });
+    }
+  }
+
+  File? _image;
+
+  // function to pick image from camera
+  Future getImage() async {
+
+    try {
+
+      final image = await ImagePicker().pickImage(source: ImageSource.camera);
+
+      if (image == null) return;
+
+      final imageTemp = File(image.path);
+
+      setState(() {
+        this._image = imageTemp;
+      });
+
+    } on PlatformException catch (e) {
+
+      print("Failed to pick image: $e");
+
     }
   }
 
@@ -219,14 +247,38 @@ class _DataEntryFormState extends State<DataEntryForm> {
 
                   child: SizedBox(
 
-                    width: 150,
+                    width: 170,
                     height: 50,
 
                     child: ElevatedButton(
                     
-                      onPressed: () {},
+                      onPressed: getImage,
                       
-                      child: const Text('Click Picture'),
+                      child: _image == null ? const Row(
+
+                        mainAxisAlignment: MainAxisAlignment.center,
+
+                        children: [
+                          Icon(
+                            Icons.camera_alt_rounded,
+                            color: Colors.deepPurple,
+                          ),
+                          SizedBox(width: 10,),
+                          Text('Click Picture'),
+                        ],
+                      ) : const Row(
+                        
+                        mainAxisAlignment: MainAxisAlignment.center,
+
+                        children: [
+                          Text('Click Again'),
+                          SizedBox(width: 10,),
+                          Icon(
+                            Icons.replay_rounded,
+                            color: Colors.deepPurple,
+                          ),
+                        ],
+                      ),
                       
                     ),
 
@@ -265,6 +317,7 @@ class _DataEntryFormState extends State<DataEntryForm> {
                           zoneDetails.zoneName = _selected_zone!;
                           zoneDetails.zoneLeader = _zone_leader_Controller.text;
                           zoneDetails.pathType = "OK";
+                          zoneDetails.image = _image!;
 
                           // Go to submit page
                           Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -306,6 +359,7 @@ class _DataEntryFormState extends State<DataEntryForm> {
                           zoneDetails.zoneName = _selected_zone!;
                           zoneDetails.zoneLeader = _zone_leader_Controller.text;
                           zoneDetails.pathType = "Not OK";
+                          zoneDetails.image = _image!;
 
                           // Go to submit page
                           Navigator.push(context, MaterialPageRoute(builder: (context) {

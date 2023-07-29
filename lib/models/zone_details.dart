@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 
 class ZoneDetails {
 
@@ -6,8 +7,7 @@ class ZoneDetails {
   late String datePicked;
   late String zoneName;
   late String zoneLeader;
-
-  // one required for picture
+  late File image;
 
   late String pathType;
 

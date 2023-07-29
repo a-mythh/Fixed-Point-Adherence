@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:path_validation/data_entry_form.dart';
-import 'package:path_validation/input_form.dart';
 // import 'package:path_validation/form_input.dart';
 // import 'package:path_validation/input_form.dart';
 // import 'package:path_validation/input_form.dart';
@@ -32,6 +31,7 @@ class HomePage extends StatelessWidget {
         foregroundColor: Colors.white,
       ),
       // body: const InputForm(),
+      // body: const PictureInput(),
       body: const DataEntryForm(),
     );
   }

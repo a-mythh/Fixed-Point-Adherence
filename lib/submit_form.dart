@@ -134,7 +134,7 @@ class ZoneDetailsSubmitForm extends StatelessWidget {
               ),
 
               title: Text(zoneDetails.zoneLeader,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: "Roboto",
                   fontSize: 20,
                   fontWeight: FontWeight.w500,
@@ -172,6 +172,27 @@ class ZoneDetailsSubmitForm extends StatelessWidget {
 
             ),
 
+            SizedBox(height: 15.0,),
+
+            // show image preview
+            ListTile(
+
+              tileColor: Colors.deepPurple.shade50,
+
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+
+              leading: const Icon(
+
+                Icons.image_rounded,
+                color: Colors.deepPurple,
+
+              ),
+
+              title: Image.file(zoneDetails.image, width: 150, height: 250, fit: BoxFit.contain,),
+
+            ),
 
             SizedBox(height: 40.0,),
 

@@ -83,9 +83,9 @@ class _DataEntryFormState extends State<DataEntryForm> {
   final TextEditingController _zone_leader_Controller = TextEditingController();
 
   // declare variables here
-  final _plantList = ["Chennai", "Mumbai", "Kolkata", "Shillong", "Delhi"];
+  final _plantList = ["Avadi", "Kelambakkam", "T Nagar", "Anna Nagar", "Vandalur"];
   final _zoneList = [
-    "Zone 1", "Zone 2", "Zone 3", "Zone 4", "Zone 5", 
+    "Burnishing Bay", "SCP Main Gangway", "SCP & Maintenance", "SCP & Material Storage", "FG & Packing 1", 
     // "Zone 6", "Zone 7", "Zone 8", "Zone 9", "Zone 10", 
     // "Zone 11", "Zone 12", "Zone 13", "Zone 14", "Zone 15", 
     // "Zone 16", "Zone 17", "Zone 18", "Zone 19", "Zone 20"

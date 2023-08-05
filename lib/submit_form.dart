@@ -1,10 +1,26 @@
+import 'dart:developer';
+import 'dart:io';
+import 'package:path/path.dart' as path;
+
 import 'package:flutter/material.dart';
+import 'package:gallery_saver/gallery_saver.dart';
+import 'package:path_validation/main.dart';
 import 'package:path_validation/models/zone_details.dart';
 
 class ZoneDetailsSubmitForm extends StatelessWidget {
   const ZoneDetailsSubmitForm({super.key, required this.zoneDetails});
 
   final ZoneDetails zoneDetails;
+
+  // change the image name
+  Future<File> changeFileNameOnly(File file, String newFileName) {
+
+    var path = file.path;
+    var lastSeparator = path.lastIndexOf(Platform.pathSeparator);
+    var newPath = path.substring(0, lastSeparator + 1) + newFileName;
+    return file.rename(newPath);
+
+}
 
   @override
   Widget build(BuildContext context) {
@@ -206,8 +222,40 @@ class ZoneDetailsSubmitForm extends StatelessWidget {
 
                 child: ElevatedButton(
                   
-                  onPressed: () {}, 
-                  child: Text(
+                  onPressed: () async {
+
+                    try {
+
+                      // TODO: patchy code - work on it later
+                      String dir = path.dirname(zoneDetails.image.path);
+                      String newName = path.join(dir, '${zoneDetails.pathType}__${zoneDetails.zoneName}__${zoneDetails.datePicked}.jpg');
+                      // log('Image Path 2: ${newName}'); 
+                      File(zoneDetails.image.path).renameSync(newName);
+                      
+
+                      await GallerySaver.saveImage(newName, albumName: 'Fixed Point Adherence', )
+                        .then((success) {
+
+                        // go back to previous page after saving
+                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) {
+
+                            return const HomePage();
+
+                          }), (Route<dynamic> route) => false,);
+                      
+                        if (success != null && success == true) {
+                          const snackBar = SnackBar(content: Text('Saved the image!'),);
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        }
+                      
+                      });
+                    } 
+                    catch (e) {
+                      log('Error while saving $e');
+                    }
+                    
+                  }, 
+                  child: const Text(
                     "Save",
                     style: TextStyle(
                       fontSize: 18,

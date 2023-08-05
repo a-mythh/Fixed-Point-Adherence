@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:path_validation/data_entry_form.dart';
-// import 'package:path_validation/form_input.dart';
-// import 'package:path_validation/input_form.dart';
-// import 'package:path_validation/input_form.dart';
 
 
 void main() {
   runApp(
     MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Fixed Point Adherence',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
@@ -30,8 +27,6 @@ class HomePage extends StatelessWidget {
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
-      // body: const InputForm(),
-      // body: const PictureInput(),
       body: const DataEntryForm(),
     );
   }

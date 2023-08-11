@@ -1,17 +1,8 @@
 import 'package:flutter/material.dart';
-<<<<<<< Updated upstream
-import 'package:path_validation/data_entry_form.dart';
-// import 'package:path_validation/form_input.dart';
-// import 'package:path_validation/input_form.dart';
-// import 'package:path_validation/input_form.dart';
-
-=======
 import 'package:Fixed_Point_Adherence/data_entry_form.dart';
 import 'auth_module.dart'; // Import the auth_module.dart
 import 'package:Fixed_Point_Adherence/helpers/database_helper.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
->>>>>>> Stashed changes
-
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,18 +10,13 @@ Future main() async {
   await DatabaseHelper().initDatabase();
   runApp(
     MaterialApp(
-<<<<<<< Updated upstream
-      title: 'Flutter Demo',
-=======
       title: 'Fixed Point Adherence',
->>>>>>> Stashed changes
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-<<<<<<< Updated upstream
       home: const HomePage(),
-=======
+
       // Use the HomeScreen as the initial route
       initialRoute: '/',
       routes: {
@@ -39,13 +25,10 @@ Future main() async {
         '/signup': (context) => const SignUpScreen(),
         '/home': (context) => const HomePage(),
       },
->>>>>>> Stashed changes
     ),
   );
 }
 
-<<<<<<< Updated upstream
-=======
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -96,7 +79,6 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
->>>>>>> Stashed changes
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -116,8 +98,6 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-<<<<<<< Updated upstream
-=======
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -274,4 +254,3 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 }
->>>>>>> Stashed changes

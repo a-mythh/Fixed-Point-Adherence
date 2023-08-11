@@ -1,4 +1,4 @@
-package com.example.path_validation
+package com.wipro_vit.path_validation
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -7,7 +7,6 @@ import 'package:gallery_saver/gallery_saver.dart';
 import 'package:Fixed_Point_Adherence/main.dart';
 import 'package:Fixed_Point_Adherence/models/zone_details.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'dart:typed_data';
 import 'package:Fixed_Point_Adherence/helpers/database_helper.dart';
 
 DatabaseHelper databaseHelper = DatabaseHelper();

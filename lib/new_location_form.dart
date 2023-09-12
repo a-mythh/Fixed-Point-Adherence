@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:Fixed_Point_Adherence/models/zone_details.dart';
-import 'package:Fixed_Point_Adherence/submit_form.dart';
 import 'package:Fixed_Point_Adherence/submit_form_newLocation.dart';
 
 
@@ -13,32 +12,12 @@ class NewLocationEntryForm extends StatefulWidget {
 
 class _NewLocationEntryFormState extends State<NewLocationEntryForm> {
 
-  // constructor of the form class
-  _NewLocationEntryFormState() {
-    _selected_plant = "";
-    _selected_zone = "";
-  }
-
-
-  // declare enums here
-  // PathTypeEnum? _pathTypeEnum;
-
   // declare controllers here
   final TextEditingController _plant_name_Controller = TextEditingController();
   final TextEditingController _zone_name_Controller = TextEditingController();
   final TextEditingController _zone_leader_Controller = TextEditingController();
 
-  // declare variables here
-  final _plantList = ["Avadi", "Kelambakkam", "T Nagar", "Anna Nagar", "Vandalur"];
-  final _zoneList = [
-    "Burnishing Bay", "SCP Main Gangway", "SCP & Maintenance", "SCP & Material Storage", "FG & Packing 1",
-    // "Zone 6", "Zone 7", "Zone 8", "Zone 9", "Zone 10",
-    // "Zone 11", "Zone 12", "Zone 13", "Zone 14", "Zone 15",
-    // "Zone 16", "Zone 17", "Zone 18", "Zone 19", "Zone 20"
-  ];
 
-  String? _selected_plant = "";
-  String? _selected_zone = "";
 
   final _formKey = GlobalKey<FormState>();
 

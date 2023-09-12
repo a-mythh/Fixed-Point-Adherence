@@ -1,3 +1,4 @@
+import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
@@ -6,7 +7,9 @@ import 'package:flutter/services.dart';
 import 'package:Fixed_Point_Adherence/models/zone_details.dart';
 import 'package:Fixed_Point_Adherence/submit_form.dart';
 
+import 'package:Fixed_Point_Adherence/helpers/database_helper.dart';
 import 'package:Fixed_Point_Adherence/helpers/save_to_excel.dart';
+DatabaseHelper databaseHelper = DatabaseHelper();
 ExcelHelper excelHelper = ExcelHelper();
 
 enum PathTypeEnum { Path_is_ok, Path_is_not_ok }
@@ -22,8 +25,8 @@ class _DataEntryFormState extends State<DataEntryForm> {
 
   // constructor of the form class
   _DataEntryFormState() {
-    _selected_plant = _plantList[0];
-    _selected_zone = _zoneList[0];
+    _selected_plant = "";
+    _selected_zone = "";
   }
 
   // initialize the state variables
@@ -77,21 +80,23 @@ class _DataEntryFormState extends State<DataEntryForm> {
     }
   }
 
-  // declare enums here
-  // PathTypeEnum? _pathTypeEnum;
+  // // declare variables here
+  // List<Map<String, dynamic>>? _plantListData;
+  // //List<Map<String, dynamic>>? _zoneListData;
+  // List<String> plantList = [];
+  // //List<String> _zoneList = [];
+  //
+  // void fetchDataFromDatabase() async {
+  //   _plantListData = await DatabaseHelper().getRecordsPlants();
+  //
+  //   for (var row in _plantListData!) { // Cast the value to String
+  //     plantList.add(row['plantName']); // Remove the null-safe access operator '?'
+  //   }
+  // }
 
   // declare controllers here
   final TextEditingController _date_picked_Controller = TextEditingController();
   final TextEditingController _zone_leader_Controller = TextEditingController();
-
-  // declare variables here
-  final _plantList = ["Avadi", "Kelambakkam", "T Nagar", "Anna Nagar", "Vandalur"];
-  final _zoneList = [
-    "Burnishing Bay", "SCP Main Gangway", "SCP & Maintenance", "SCP & Material Storage", "FG & Packing 1",
-    // "Zone 6", "Zone 7", "Zone 8", "Zone 9", "Zone 10", 
-    // "Zone 11", "Zone 12", "Zone 13", "Zone 14", "Zone 15", 
-    // "Zone 16", "Zone 17", "Zone 18", "Zone 19", "Zone 20"
-  ];
 
   String? _selected_plant = "";
   String? _selected_zone = "";
@@ -100,6 +105,7 @@ class _DataEntryFormState extends State<DataEntryForm> {
 
   @override
   Widget build(BuildContext context) {
+
     return Container(
       padding: const EdgeInsets.all(20.0),
       child: ListView(
@@ -158,12 +164,12 @@ class _DataEntryFormState extends State<DataEntryForm> {
                   ),
 
                   // list of items to show in the plant drop down menu
-                  items: _plantList
-                      .map((plant) => DropdownMenuItem(
-                            value: plant,
-                            child: Text(plant),
-                          ))
-                      .toList(),
+                   items: [], //plantList
+                      // .map((plant) => DropdownMenuItem(
+                      //       value: plant,
+                      //       child: Text(plant),
+                      //     ))
+                      // .toList(),
 
                   // what happens when a value is selected
                   onChanged: (value) {
@@ -198,32 +204,34 @@ class _DataEntryFormState extends State<DataEntryForm> {
                 const SizedBox(height: 40,),
 
                 // select zone
-                DropdownButtonFormField(
-
-                  // add some decoration to the drop down menu
-                  decoration: const InputDecoration(
-                    labelText: "Select Zone",
-                    prefixIcon: Icon(
-                      Icons.room_rounded,
-                      color: Colors.deepPurple,
+                IgnorePointer(
+                  ignoring: _selected_plant == null || _selected_plant!.isEmpty,
+                  child: DropdownButtonFormField(
+                    // add some decoration to the drop down menu
+                    decoration: const InputDecoration(
+                      labelText: "Select Zone",
+                      prefixIcon: Icon(
+                        Icons.room_rounded,
+                        color: Colors.deepPurple,
+                      ),
+                      border: OutlineInputBorder(),
                     ),
-                    border: OutlineInputBorder(),
+
+                    // list of items to show in the zone drop down menu
+                     items: [], //_zoneList
+                    //     .map((plant) => DropdownMenuItem(
+                    //   value: plant,
+                    //   child: Text(plant),
+                    // ))
+                    //     .toList(),
+
+                    // what happens when a value is selected
+                    onChanged: (value) {
+                      setState(() {
+                        _selected_zone = value as String;
+                      });
+                    },
                   ),
-
-                  // list of items to show in the plant drop down menu
-                  items: _zoneList
-                      .map((zone) => DropdownMenuItem(
-                            value: zone,
-                            child: Text(zone),
-                          ))
-                      .toList(),
-
-                  // what happens when a value is selected
-                  onChanged: (value) {
-                    setState(() {
-                      _selected_zone = value as String;
-                    });
-                  },
                 ),
 
                 const SizedBox(height: 40,),

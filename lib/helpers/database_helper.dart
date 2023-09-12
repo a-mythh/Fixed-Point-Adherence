@@ -1,7 +1,6 @@
-import 'dart:typed_data';
-
 import 'package:path/path.dart' as path;
 import 'package:sqflite/sqflite.dart';
+import 'package:encrypt/encrypt.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper.internal();
@@ -28,10 +27,25 @@ class DatabaseHelper {
 
   void _onCreate(Database db, int version) async {
     // Create your tables here if needed
+
+    //Wipro data table
     await db.execute('CREATE TABLE fpa_wipro_data (datePicked TEXT, plantName TEXT, zoneName TEXT, zoneLeader TEXT, pathType TEXT, imagePath TEXT)');
-    await db.execute('CREATE TABLE fpa_wipro_users (username TEXT PRIMARY KEY, password TEXT, accType TEXT)');
-    await db.execute('CREATE TABLE fpa_wipro_plants (plantName TEXT PRIMARY KEY)');
-    await db.execute('CREATE TABLE fpa_wipro_zones (zoneName TEXT PRIMARY KEY)');
+
+    //Wipro Users table
+    await db.execute('CREATE TABLE fpa_wipro_users (username TEXT PRIMARY KEY NOT NULL, password TEXT NOT NULL, accType TEXT NOT NULL)');
+
+    //Default Admin user
+
+    final key = Key.fromLength(32);
+    final encrypter = Encrypter(AES(key));
+    final encryptedPassword = encrypter.encrypt("password", iv: IV.fromLength(16));
+    await db.insert('fpa_wipro_users', {'username': 'admin', 'password': encryptedPassword.base64, 'accType': 'admin'});
+
+    //Wipro Plants table
+    await db.execute('CREATE TABLE fpa_wipro_plants (plantName TEXT PRIMARY KEY NOT NULL)');
+
+    //Wipro Zones table
+    await db.execute('CREATE TABLE fpa_wipro_zones (zoneName TEXT PRIMARY KEY, plantName TEXT, zoneLeader TEXT, FOREIGN KEY(plantName) REFERENCES fpa_wipro_plants(plantName))');
   }
 
   Future<void> closeDatabase() async {
@@ -40,44 +54,61 @@ class DatabaseHelper {
       _db = null;
     }
   }
-  //Main DATA table (DATA -> EXCEL)
+  //Main DATA table:::::: Inserting data in the table in form of records
   Future<void> insertRecordData(String datePicked, String plantName, String zoneName, String zoneLeader, String pathType, String imagePath) async {
     Database? db = await this.db;
     await db?.insert('fpa_wipro_data', {'datePicked': datePicked, 'plantName': plantName, 'zoneName' : zoneName, 'zoneLeader' : zoneLeader, 'pathType' : pathType, 'imagePath' : imagePath});
   }
 
+
+  //get Cumulative records
   Future<List<Map<String, dynamic>>?> getRecordsData() async {
     Database? db = await this.db;
     return await db?.query('fpa_wipro_data');
   }
 
   // PLANTS Data
+  //Inserting plant data
   Future<void> insertRecordPlants(String plantName) async {
     Database? db = await this.db;
     await db?.insert('fpa_wipro_plants', {'plantName' : plantName});
   }
 
+
+  //Getting plant data
   Future<List<Map<String, dynamic>>?> getRecordsPlants() async {
     Database? db = await this.db;
     return await db?.query('fpa_wipro_plants');
   }
 
+
+  //Deleting plant data
   Future<void> deleteRecordPlants(String plantName) async {
     Database? db = await this.db;
     await db?.delete('fpa_wipro_plants', where: 'plantName = ?', whereArgs: [plantName]);
+    await db?.delete('fpa_wipro_zones', where: 'plantName = ?', whereArgs: [plantName]);
   }
+
 
   //ZONES Data
-  Future<void> insertRecordZones(String zoneName) async {
+  //Inserting Zone Data
+  Future<void> insertRecordZones(String zoneName, String zoneLeader, String plantName) async {
     Database? db = await this.db;
-    await db?.insert('fpa_wipro_zones', {'zoneName': zoneName});
+    await db?.insert('fpa_wipro_zones', {'zoneName': zoneName, 'plantName': plantName, 'zoneLeader': zoneLeader});
   }
 
+  //Getting Zone Data
   Future<List<Map<String, dynamic>>?> getRecordsZones() async {
     Database? db = await this.db;
     return await db?.query('fpa_wipro_zones');
   }
 
+  Future<List<Map<String, dynamic>>?> getRecordsZonesWrtPlant(String plantName) async {
+    Database? db = await this.db;
+    return await db?.query('fpa_wipro_zones', where: 'plantName = ?', whereArgs: [plantName]);
+  }
+
+  //Deleting Zone Data
   Future<void> deleteRecordZones(String zoneName) async {
     Database? db = await this.db;
     await db?.delete('fpa_wipro_zones', where: 'zoneName = ?', whereArgs: [zoneName]);
@@ -85,16 +116,15 @@ class DatabaseHelper {
 
   //USERS Data
   //TO-DO
-  /*
   Future<void> insertRecordUser(String username, String password, String accType) async {
     Database? db = await this.db;
     await db?.insert('fpa_wipro_users', {'username': username, 'password': password, 'accType': accType});
   }
-  */
 
-  Future<void> insertRecordUser(String username, String password) async {
+  //Update Password of a user
+  Future<void> updateRecordUserPass(String username, String password) async {
     Database? db = await this.db;
-    await db?.insert('fpa_wipro_users', {'username': username, 'password': password});
+    await db?.rawUpdate('UPDATE fpa_wipro_users SET password = ? WHERE username = ?', [password, username]);
   }
 
   Future<List<Map<String, dynamic>>?> getRecordsUser() async {

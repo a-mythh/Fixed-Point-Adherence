@@ -3,6 +3,8 @@ import 'package:Fixed_Point_Adherence/data_entry_form.dart';
 import 'auth_module.dart'; // Import the auth_module.dart
 import 'package:Fixed_Point_Adherence/helpers/database_helper.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:Fixed_Point_Adherence/new_location_form.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,8 +23,10 @@ Future main() async {
       routes: {
         '/': (context) => const HomeScreen(),
         '/login': (context) => const LoginPage(),
-        '/signup': (context) => const SignUpScreen(),
         '/home': (context) => const HomePage(),
+        '/admin': (context) => const AdminPage(),
+        '/new_user': (context) => const SignUpScreen(),
+        '/new_location': (context) => const NewLocationPage(),
       },
     ),
   );
@@ -64,13 +68,6 @@ class HomeScreen extends StatelessWidget {
               },
               child: Text('Login'),
             ),
-            SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/signup'); // Navigate to the signup page
-              },
-              child: Text('Sign Up'),
-            ),
           ],
         ),
       ),
@@ -85,15 +82,139 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Upload Data'),
+        title: const Text("Upload Data"),
+        centerTitle: true,
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        automaticallyImplyLeading: false,
+        actions: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              textStyle: TextStyle(fontWeight: FontWeight.bold),
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.blue,
+              shape: CircleBorder(),
+              padding: EdgeInsets.all(1),
+            ),
+            onPressed: () async {
+              Navigator.pop(context);
+              Navigator.pushReplacementNamed(context, '/');
+
+              await Fluttertoast.showToast(
+                msg: 'User successfully logged out!',
+                toastLength: Toast.LENGTH_LONG,
+                gravity: ToastGravity.BOTTOM,
+                backgroundColor: Colors.green,
+                textColor: Colors.white,
+              );
+            },
+            child: const Icon(
+              Icons.power_settings_new,
+              color: Colors.blue,
+            ),
+          ),
+        ],
+      ),
+      body: const DataEntryForm(),
+    );
+  }
+}
+
+class NewLocationPage extends StatelessWidget {
+  const NewLocationPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('New Location Registration'),
         centerTitle: true,
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
         automaticallyImplyLeading: false,
       ),
-      // body: const InputForm(),
-      // body: const PictureInput(),
-      body: const DataEntryForm(),
+      body: const NewLocationEntryForm(),
+    );
+  }
+}
+
+class AdminPage extends StatelessWidget {
+  const AdminPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Admin Dashboard"),
+        centerTitle: true,
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        automaticallyImplyLeading: false,
+        actions: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              textStyle: TextStyle(fontWeight: FontWeight.bold),
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.blue,
+              shape: CircleBorder(),
+              padding: EdgeInsets.all(1),
+            ),
+            onPressed: () async {
+              Navigator.pop(context);
+              Navigator.pushReplacementNamed(context, '/');
+
+              await Fluttertoast.showToast(
+                msg: 'Admin successfully logged out!',
+                toastLength: Toast.LENGTH_LONG,
+                gravity: ToastGravity.BOTTOM,
+                backgroundColor: Colors.green,
+                textColor: Colors.white,
+              );
+            },
+            child: const Icon(
+              Icons.power_settings_new,
+              color: Colors.blue,
+            ),
+          ),
+        ],
+      ),
+      body:  Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+
+            const SizedBox(
+
+              height: 150,
+              width: 150,
+
+              child: Image(
+
+                image: AssetImage('images/wipro_logo.png'),
+              ),
+
+            ),
+            const SizedBox(height: 20,),
+
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/new_user'); // Navigate to the new user register page
+              },
+              child: Text('Register User'),
+
+            ),
+
+            const SizedBox(height: 20,),
+
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/new_location'); // Navigate to the new location page
+              },
+              child: Text('Register New Locations'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -119,14 +240,17 @@ class _LoginPageState extends State<LoginPage> {
     String username = _usernameController.text;
     String password = _passwordController.text;
 
-    bool isLoggedIn = await AuthModule.login(username, password);
+    Map<String, dynamic> isLoggedIn = await AuthModule.login(username, password);
 
     setState(() {
       _isLoading = false;
     });
 
-    if (isLoggedIn) {
-      Navigator.pushReplacementNamed(context, '/home');
+    if (isLoggedIn['isLogin'] == true) {
+
+      if (isLoggedIn['userType'] == 'user') { Navigator.pushReplacementNamed(context, '/home'); }
+      else if (isLoggedIn['userType'] == 'admin') { Navigator.pushReplacementNamed(context, '/admin'); }
+
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Invalid Credentials. Try again'),
@@ -186,16 +310,16 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _secretController = TextEditingController();
+  final List<String> _accTypeList = ['User', 'Admin'];
+  String _selected_accType = '';
   bool _showPassword = false; // Add a new bool variable to track the show/hide password state
-  bool _showSecret = false;
 
   void _onSignUpPressed(BuildContext context) async {
     String username = _usernameController.text;
     String password = _passwordController.text;
-    String secret = _secretController.text;
+    String accType = _selected_accType;
 
-    AuthModule.signUp(username, password, secret);
+    AuthModule.signUp(username, password, accType);
 
     Navigator.pop(context);
   }
@@ -204,17 +328,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sign Up'),
+        title: const Text('New User Registration'),
         centerTitle: true,
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextFormField(controller: _usernameController, decoration: InputDecoration(labelText: 'Username')),
+            TextFormField(controller: _usernameController, decoration: const InputDecoration(labelText: 'Username')),
             TextFormField(
               controller: _passwordController,
               decoration: InputDecoration(
@@ -230,23 +354,37 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               obscureText: !_showPassword,
             ),
-            TextFormField(
-              controller: _secretController,
-              decoration: InputDecoration(
-                labelText: 'Secret Key',
-                suffixIcon: IconButton(
-                  icon: Icon(_showSecret ? Icons.visibility_off : Icons.visibility),
-                  onPressed: () {
-                    setState(() {
-                      _showSecret = !_showSecret;
-                    });
-                  },
+            const SizedBox(height: 30,),
+            DropdownButtonFormField(
+
+              // add some decoration to the drop down menu
+              decoration: const InputDecoration(
+                labelText: "Select User Type",
+                prefixIcon: Icon(
+                  Icons.admin_panel_settings,
+                  color: Colors.deepPurple,
                 ),
+                border: OutlineInputBorder(),
               ),
-              obscureText: !_showSecret,
+
+              // list of items to show in the plant drop down menu
+              items: _accTypeList
+                  .map((plant) => DropdownMenuItem(
+                value: plant,
+                child: Text(plant),
+              ))
+                  .toList(),
+
+              // what happens when a value is selected
+              onChanged: (value) {
+                setState(() {
+                  _selected_accType = value as String;
+                });
+              },
             ),
-            SizedBox(height: 20,),
-            ElevatedButton(onPressed: () => _onSignUpPressed(context), child: Text('Sign Up')),
+            const SizedBox(height: 20,),
+
+            ElevatedButton(onPressed: () => _onSignUpPressed(context), child: const Text('Sign User Up')),
           ],
         ),
       ),

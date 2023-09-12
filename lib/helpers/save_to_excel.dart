@@ -31,7 +31,6 @@ class ExcelHelper {
 
     return excelDirectory.path;
   } catch (e) {
-    print('Error while getting or creating directory: $e');
     return null;
   }
 }

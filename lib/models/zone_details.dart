@@ -12,3 +12,11 @@ class ZoneDetails {
   late String pathType;
 
 }
+
+class NewLocationDetails {
+
+  late String plantName;
+  late String zoneName;
+  late String zoneLeader;
+
+}

@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'dart:io';
-import 'dart:convert';
 import 'package:path/path.dart' as path;
 import 'package:flutter/material.dart';
 import 'package:gallery_saver/gallery_saver.dart';
@@ -71,7 +70,7 @@ class ZoneDetailsSubmitForm extends StatelessWidget {
               ),
 
               title: Text(zoneDetails.plantName,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: "Roboto",
                   fontSize: 20,
                   fontWeight: FontWeight.w500,
@@ -80,7 +79,7 @@ class ZoneDetailsSubmitForm extends StatelessWidget {
 
             ),
 
-            SizedBox(height: 15.0,),
+            const SizedBox(height: 15.0,),
 
             // show date picked
             ListTile(
@@ -99,7 +98,7 @@ class ZoneDetailsSubmitForm extends StatelessWidget {
               ),
 
               title: Text(zoneDetails.datePicked,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: "Roboto",
                   fontSize: 20,
                   fontWeight: FontWeight.w500,
@@ -108,7 +107,7 @@ class ZoneDetailsSubmitForm extends StatelessWidget {
 
             ),
 
-            SizedBox(height: 15.0,),
+            const SizedBox(height: 15.0,),
 
             // show zone name
             ListTile(
@@ -127,7 +126,7 @@ class ZoneDetailsSubmitForm extends StatelessWidget {
               ),
 
               title: Text(zoneDetails.zoneName,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: "Roboto",
                   fontSize: 20,
                   fontWeight: FontWeight.w500,
@@ -136,7 +135,7 @@ class ZoneDetailsSubmitForm extends StatelessWidget {
 
             ),
 
-            SizedBox(height: 15.0,),
+            const SizedBox(height: 15.0,),
 
             // show zone leader
             ListTile(
@@ -164,7 +163,7 @@ class ZoneDetailsSubmitForm extends StatelessWidget {
 
             ),
 
-            SizedBox(height: 15.0,),
+            const SizedBox(height: 15.0,),
 
             // show path type
             ListTile(
@@ -184,7 +183,7 @@ class ZoneDetailsSubmitForm extends StatelessWidget {
               ),
 
               title: Text(zoneDetails.pathType,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: "Roboto",
                   fontSize: 20,
                   fontWeight: FontWeight.w500,
@@ -193,7 +192,7 @@ class ZoneDetailsSubmitForm extends StatelessWidget {
 
             ),
 
-            SizedBox(height: 15.0,),
+            const SizedBox(height: 15.0,),
 
             // show image preview
             ListTile(
@@ -215,7 +214,7 @@ class ZoneDetailsSubmitForm extends StatelessWidget {
 
             ),
 
-            SizedBox(height: 40.0,),
+            const SizedBox(height: 40.0,),
 
 
             // Save details button -> save to excel
@@ -244,7 +243,7 @@ class ZoneDetailsSubmitForm extends StatelessWidget {
 
 
                                 try {
-                                  await databaseHelper.insertRecordData(zoneDetails.datePicked, zoneDetails.plantName, zoneDetails.zoneName, zoneDetails.zoneLeader, zoneDetails.pathType, newName);
+                                  await databaseHelper.insertData(zoneDetails.datePicked, zoneDetails.plantName, zoneDetails.zoneName, zoneDetails.zoneLeader, zoneDetails.pathType, newName);
 
                                   await Fluttertoast.showToast(
                                     msg: 'Stored the details in the database!',

@@ -1,182 +1,237 @@
-import 'package:encrypt/encrypt.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:Fixed_Point_Adherence/helpers/database_helper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:flutter/material.dart' as Material;
-
+import 'package:flutter/material.dart';
 
 DatabaseHelper databaseHelper = DatabaseHelper();
 
 class AuthModule {
-  static final key = Key.fromLength(32);
-  static final encrypter = Encrypter(AES(key));
+  static final key = encrypt.Key.fromUtf8("e16ce888a20dadb8");
+  static final iv = encrypt.IV.fromUtf8("e16ce888a20dadb8");
+  static final encrypter = encrypt.Encrypter(encrypt.AES(key));
 
-  static Future<void> signUp(String username, String password, String accType) async {
-
+  /// ***************** SIGN UP ******************
+  static Future<void> signUp(
+      String username, String password, String accType) async {
     try {
-      final encryptedPassword = encrypter.encrypt(password, iv: IV.fromLength(16));
-      await databaseHelper.insertRecordUser(username, encryptedPassword.base64, accType).then((value) async=> {
-        await Fluttertoast.showToast(
-          msg: 'User successfully signed up!',
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Material.Colors.green,
-          textColor: Material.Colors.white,
-        )
-      });
+      // encrypt the password
+      final encryptedPassword = encrypter.encrypt(
+        password,
+        iv: iv,
+      );
 
-    } catch(e) {
+      // insert new user details into the database
+      await databaseHelper
+          .insertRecordUser(username, encryptedPassword.base64, accType)
+          .then(
+        (value) async {
+          // show message on successful sign up
+          await Fluttertoast.showToast(
+            msg: 'User successfully signed up!',
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+          );
+        },
+      );
+    } catch (e) {
+      // show error on unsuccessful sign up
       await Fluttertoast.showToast(
         msg: 'User registration failed!',
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.BOTTOM,
-        backgroundColor: Material.Colors.red,
-        textColor: Material.Colors.white,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
       );
-
     }
   }
 
-  static Future<Map<String, dynamic>> login(String username, String password) async {
+  /// ***************** LOGIN ******************
+  static Future<Map<String, dynamic>> login(
+    String username,
+    String password,
+  ) 
+  async 
+  {
+    // stores the user type and if allowed to login
+    Map<String, dynamic> result = {
+      'userType': 'user',
+      'isLogin': false,
+    };
 
-    Map<String, dynamic> result = {'userType': 'user', 'isLogin': true};
+    // get user details if it exists
+    List<Map<String, dynamic>>? singleUserDetails = await DatabaseHelper().getRecordsSingleUser(username);
 
-    Future<List<Map<String, dynamic>>?> data = DatabaseHelper().getRecordsSingleUser(username);
-    List<Map<String, dynamic>>? fetchedData = await data;
-
-    if (fetchedData == null) {
+    // if user does not exist show error
+    if (singleUserDetails == null) 
+    {
       Fluttertoast.showToast(
         msg: 'Username is not registered!',
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.BOTTOM,
-        backgroundColor: Material.Colors.red,
-        textColor: Material.Colors.white,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
       );
 
       return result;
     }
 
-    var data_row = fetchedData[0];
+    // get user details
+    var dataRow = singleUserDetails[0];
+    final storedPasswordBase64 = dataRow['password'];
+    final accType = dataRow['accType'];
 
-    final storedPasswordBase64 = data_row['password'];
+    // check if password is present for that user
+    if (storedPasswordBase64 != null) 
+    {
+      var encryptedPass = encrypt.Encrypted.fromBase64(storedPasswordBase64);
+      // decrpyt the password
+      
+      print(encrypter.decrypt(encryptedPass, iv: iv));
+      final storedPassword = encrypt.Encrypted.fromBase64(storedPasswordBase64);
+      // print(storedPasswordBase64);
+      final decryptedPassword =
+          encrypter.decrypt(storedPassword, iv: iv);
+      print(decryptedPassword);
 
-    final accType = data_row['accType'];
+      // if password is correct
+      if (password == decryptedPassword) 
+      {
+        // login as normal user
+        if (accType == 'user') 
+        {
+          // show message on successful login
+          Fluttertoast.showToast(
+            msg: 'Successfully Logged In!',
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+          );
 
-    if (storedPasswordBase64 != null) {
-      final storedPassword = Encrypted.fromBase64(storedPasswordBase64);
-      final decryptedPassword = encrypter.decrypt(storedPassword, iv: IV.fromLength(16));
-      if(password == decryptedPassword) {
+          result['isLogin'] = true;
 
-          if(accType == 'User') {
-                Fluttertoast.showToast(
-                  msg: 'Successfully Logged In!',
-                  toastLength: Toast.LENGTH_LONG,
-                  gravity: ToastGravity.BOTTOM,
-                  backgroundColor: Material.Colors.green,
-                  textColor: Material.Colors.white
-                );
-
-                result['isLogin'] = true;
-
-                return result;
-          }
-
-        else if(accType == 'Admin') {
-                Fluttertoast.showToast(
-                  msg: 'Successfully Logged In!',
-                  toastLength: Toast.LENGTH_LONG,
-                  gravity: ToastGravity.BOTTOM,
-                  backgroundColor: Material.Colors.green,
-                  textColor: Material.Colors.white
-                );
-
-                result['isLogin'] = true;
-                result['userType'] = 'admin';
-
-                return result;
+          return result;
         }
 
+        // login as administrative user
+        else if (accType == 'admin') 
+        {
+          // show message on successful login
+          Fluttertoast.showToast(
+            msg: 'Successfully Logged In!',
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+          );
+
+          result['isLogin'] = true;
+          result['userType'] = 'admin';
+
+          return result;
+        }
       }
 
+      // if not a normal or admin user
       else {
-
-        result['isLogin'] = false;
         return result;
       }
     }
-
+    // if password absent for that user
     else {
-      result['isLogin'] = false;
       return result;
     }
 
-
     return result;
-
   }
 
-  static Future<bool> resetPassword(String username, String password, String newPassword) async {
-
+  /// ***************** CHANGE PASSWORD ******************
+  static Future<bool> resetPassword(
+    String username,
+    String password,
+    String newPassword,
+  ) async 
+  {
     Future<List<Map<String, dynamic>>?> data = DatabaseHelper().getRecordsSingleUser(username);
     List<Map<String, dynamic>>? fetchedData = await data;
 
+    // check if user is present in database
     if (fetchedData == null) {
+      // show error is user not present in database
       Fluttertoast.showToast(
         msg: 'Username is not registered!',
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.BOTTOM,
-        backgroundColor: Material.Colors.red,
-        textColor: Material.Colors.white,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
       );
 
       return false;
     }
 
-    var data_row = fetchedData[0];
+    var dataRow = fetchedData[0];
+    final storedPasswordBase64 = dataRow['password'];
 
-    final storedPasswordBase64 = data_row['password'];
-
+    // check if password present in database
     if (storedPasswordBase64 != null) {
-      final storedPassword = Encrypted.fromBase64(storedPasswordBase64);
-      final decryptedPassword = encrypter.decrypt(storedPassword, iv: IV.fromLength(16));
-      if(newPassword == decryptedPassword) {
+      // decrypt the password
+      final storedPassword = encrypt.Encrypted.fromBase64(storedPasswordBase64);
+      final decryptedPassword =
+          encrypter.decrypt(storedPassword, iv: iv);
 
+      // check if old and new password same
+      if (newPassword == decryptedPassword) {
         Fluttertoast.showToast(
           msg: 'New password cannot be same as before!',
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
-          backgroundColor: Material.Colors.red,
-          textColor: Material.Colors.white,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
         );
 
         return false;
       }
-
+      // if password correctly entered
       else {
         try {
-          final encryptedPassword = encrypter.encrypt(newPassword, iv: IV.fromLength(16));
-          await databaseHelper.updateRecordUserPass(username, encryptedPassword.base64).then((value) async=> {
-            await Fluttertoast.showToast(
-              msg: 'Password reset successful!',
-              toastLength: Toast.LENGTH_LONG,
-              gravity: ToastGravity.BOTTOM,
-              backgroundColor: Material.Colors.green,
-              textColor: Material.Colors.white,
-            )
-          });
+          // encrypt and store the password
+          final encryptedPassword = encrypter.encrypt(
+            newPassword,
+            iv: iv,
+          );
+
+          // update the user's password in the database
+          await databaseHelper
+              .updateRecordUserPassword(username, encryptedPassword.base64)
+              .then(
+            (value) async {
+              // show message on successful password change
+              await Fluttertoast.showToast(
+                msg: 'Password changed successfully!',
+                toastLength: Toast.LENGTH_LONG,
+                gravity: ToastGravity.BOTTOM,
+                backgroundColor: Colors.green,
+                textColor: Colors.white,
+              );
+            },
+          );
 
           return true;
-
-        } catch(e) {
+        } 
+        catch (e) 
+        {
+          // show error on unsuccesful password change
           await Fluttertoast.showToast(
             msg: 'User registration failed!',
             toastLength: Toast.LENGTH_LONG,
             gravity: ToastGravity.BOTTOM,
-            backgroundColor: Material.Colors.red,
-            textColor: Material.Colors.white,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
           );
 
           return false;
-
         }
       }
     }

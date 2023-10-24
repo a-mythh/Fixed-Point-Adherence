@@ -32,8 +32,8 @@ dependencies:
     sdk: flutter
   intl: ^0.18.0
   image_picker: ^1.0.1
-  path_provider: ^2.0.15
-  encrypt: ^5.0.0
+  path_provider: ^2.1.1
+  encrypt: ^5.0.3
   shared_preferences: ^2.0.0
   gallery_saver: ^2.3.2
   excel: 2.1.0
@@ -77,7 +77,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - images/wipro_logo.png
-    - lib/.env
+    # - lib/.env
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

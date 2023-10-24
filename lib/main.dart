@@ -2,23 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:Fixed_Point_Adherence/data_entry_form.dart';
 import 'auth_module.dart'; // Import the auth_module.dart
 import 'package:Fixed_Point_Adherence/helpers/database_helper.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+// import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:Fixed_Point_Adherence/new_location_form.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-Future main() async {
+main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: 'lib/.env');
-  await DatabaseHelper().initDatabase();
-  runApp(
-    MaterialApp(
-      title: 'Fixed Point Adherence',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+  // await dotenv.load(fileName: 'lib/.env');
 
-      // Use the HomeScreen as the initial route
+  // initialize database
+  await DatabaseHelper().initDatabase();
+
+  runApp(const App());
+}
+
+final theme = ThemeData(
+  colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+  useMaterial3: true,
+);
+
+class App extends StatelessWidget {
+  const App({super.key});
+
+  @override
+  Widget build(context) {
+    return MaterialApp(
+      title: 'Fixed Point Adherence',
+      theme: theme,
+
+      // use the HomeScreen as the initial route
       initialRoute: '/',
       routes: {
         '/': (context) => const HomeScreen(),
@@ -28,8 +40,8 @@ Future main() async {
         '/new_user': (context) => const SignUpScreen(),
         '/new_location': (context) => const NewLocationPage(),
       },
-    ),
-  );
+    );
+  }
 }
 
 class HomeScreen extends StatelessWidget {
@@ -39,34 +51,30 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text('Fixed Point Adherence'),
-          centerTitle: true,
-          backgroundColor: Colors.blue,
-          foregroundColor: Colors.white,
+        title: const Text('Fixed Point Adherence'),
+        centerTitle: true,
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-
             const SizedBox(
-
-            height: 150,
-            width: 150,
-
-            child: Image(
-
-              image: AssetImage('images/wipro_logo.png'),
+              height: 150,
+              width: 150,
+              child: Image(
+                image: AssetImage('images/wipro_logo.png'),
+              ),
             ),
-
-          ),
-            const SizedBox(height: 20,),
-
+            const SizedBox(
+              height: 20
+            ),
             ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/login'); // Navigate to the login page
               },
-              child: Text('Login'),
+              child: const Text('Login'),
             ),
           ],
         ),
@@ -178,37 +186,34 @@ class AdminPage extends StatelessWidget {
           ),
         ],
       ),
-      body:  Center(
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-
             const SizedBox(
-
               height: 150,
               width: 150,
-
               child: Image(
-
                 image: AssetImage('images/wipro_logo.png'),
               ),
-
             ),
-            const SizedBox(height: 20,),
-
+            const SizedBox(
+              height: 20,
+            ),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/new_user'); // Navigate to the new user register page
+                Navigator.pushNamed(context,
+                    '/new_user'); // Navigate to the new user register page
               },
               child: Text('Register User'),
-
             ),
-
-            const SizedBox(height: 20,),
-
+            const SizedBox(
+              height: 20,
+            ),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/new_location'); // Navigate to the new location page
+                Navigator.pushNamed(context,
+                    '/new_location'); // Navigate to the new location page
               },
               child: Text('Register New Locations'),
             ),
@@ -230,7 +235,8 @@ class _LoginPageState extends State<LoginPage> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
-  bool _showPassword = false; // Add a new bool variable to track the show/hide password state
+  bool _showPassword =
+      false; // Add a new bool variable to track the show/hide password state
 
   void _onLoginPressed(BuildContext context) async {
     setState(() {
@@ -240,19 +246,23 @@ class _LoginPageState extends State<LoginPage> {
     String username = _usernameController.text;
     String password = _passwordController.text;
 
-    Map<String, dynamic> isLoggedIn = await AuthModule.login(username, password);
+    Map<String, dynamic> isLoggedIn =
+        await AuthModule.login(username, password);
+
+    // Map<String, dynamic> isLoggedIn = {'userType': 'admin', 'isLogin': true};
 
     setState(() {
       _isLoading = false;
     });
 
     if (isLoggedIn['isLogin'] == true) {
-
-      if (isLoggedIn['userType'] == 'user') { Navigator.pushReplacementNamed(context, '/home'); }
-      else if (isLoggedIn['userType'] == 'admin') { Navigator.pushReplacementNamed(context, '/admin'); }
-
+      if (isLoggedIn['userType'] == 'user') {
+        Navigator.pushReplacementNamed(context, '/home');
+      } else if (isLoggedIn['userType'] == 'admin') {
+        Navigator.pushReplacementNamed(context, '/admin');
+      }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Invalid Credentials. Try again'),
       ));
     }
@@ -272,13 +282,16 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextFormField(controller: _usernameController, decoration: InputDecoration(labelText: 'Username')),
+            TextFormField(
+                controller: _usernameController,
+                decoration: InputDecoration(labelText: 'Username')),
             TextFormField(
               controller: _passwordController,
               decoration: InputDecoration(
                 labelText: 'Password',
                 suffixIcon: IconButton(
-                  icon: Icon(_showPassword ? Icons.visibility_off : Icons.visibility),
+                  icon: Icon(
+                      _showPassword ? Icons.visibility_off : Icons.visibility),
                   onPressed: () {
                     setState(() {
                       _showPassword = !_showPassword;
@@ -288,7 +301,9 @@ class _LoginPageState extends State<LoginPage> {
               ),
               obscureText: !_showPassword,
             ),
-            SizedBox(height: 20,),
+            SizedBox(
+              height: 20,
+            ),
             ElevatedButton(
               onPressed: _isLoading ? null : () => _onLoginPressed(context),
               child: _isLoading ? CircularProgressIndicator() : Text('Login'),
@@ -312,12 +327,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _passwordController = TextEditingController();
   final List<String> _accTypeList = ['User', 'Admin'];
   String _selected_accType = '';
-  bool _showPassword = false; // Add a new bool variable to track the show/hide password state
+  bool _showPassword =
+      false; // Add a new bool variable to track the show/hide password state
 
   void _onSignUpPressed(BuildContext context) async {
     String username = _usernameController.text;
     String password = _passwordController.text;
-    String accType = _selected_accType;
+    String accType = _selected_accType.toLowerCase();
 
     AuthModule.signUp(username, password, accType);
 
@@ -338,13 +354,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextFormField(controller: _usernameController, decoration: const InputDecoration(labelText: 'Username')),
+            TextFormField(
+                controller: _usernameController,
+                decoration: const InputDecoration(labelText: 'Username')),
             TextFormField(
               controller: _passwordController,
               decoration: InputDecoration(
                 labelText: 'Password',
                 suffixIcon: IconButton(
-                  icon: Icon(_showPassword ? Icons.visibility_off : Icons.visibility),
+                  icon: Icon(
+                      _showPassword ? Icons.visibility_off : Icons.visibility),
                   onPressed: () {
                     setState(() {
                       _showPassword = !_showPassword;
@@ -354,9 +373,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               obscureText: !_showPassword,
             ),
-            const SizedBox(height: 30,),
+            const SizedBox(
+              height: 30,
+            ),
             DropdownButtonFormField(
-
               // add some decoration to the drop down menu
               decoration: const InputDecoration(
                 labelText: "Select User Type",
@@ -370,9 +390,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
               // list of items to show in the plant drop down menu
               items: _accTypeList
                   .map((plant) => DropdownMenuItem(
-                value: plant,
-                child: Text(plant),
-              ))
+                        value: plant,
+                        child: Text(plant),
+                      ))
                   .toList(),
 
               // what happens when a value is selected
@@ -382,9 +402,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 });
               },
             ),
-            const SizedBox(height: 20,),
-
-            ElevatedButton(onPressed: () => _onSignUpPressed(context), child: const Text('Sign User Up')),
+            const SizedBox(
+              height: 20,
+            ),
+            ElevatedButton(
+                onPressed: () => _onSignUpPressed(context),
+                child: const Text('Sign User Up')),
           ],
         ),
       ),

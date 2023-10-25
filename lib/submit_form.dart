@@ -1,9 +1,9 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:Fixed_Point_Adherence/screens/data_entry.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter/material.dart';
 import 'package:gallery_saver/gallery_saver.dart';
-import 'package:Fixed_Point_Adherence/main.dart';
 import 'package:Fixed_Point_Adherence/models/zone_details.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:Fixed_Point_Adherence/helpers/database_helper.dart';
@@ -30,7 +30,6 @@ class ZoneDetailsSubmitForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
 
-      // title bar
       appBar: AppBar(
 
         title: const Text("Submit Zone Data"),
@@ -267,7 +266,7 @@ class ZoneDetailsSubmitForm extends StatelessWidget {
                             // go back to previous page after saving
                             Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) {
 
-                              return const HomePage();
+                              return const DataEntry();
 
                             }), (Route<dynamic> route) => false,);
 

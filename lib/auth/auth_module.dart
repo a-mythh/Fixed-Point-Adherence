@@ -85,15 +85,11 @@ class AuthModule {
     // check if password is present for that user
     if (storedPasswordBase64 != null) 
     {
-      var encryptedPass = encrypt.Encrypted.fromBase64(storedPasswordBase64);
       // decrpyt the password
-      
-      print(encrypter.decrypt(encryptedPass, iv: iv));
       final storedPassword = encrypt.Encrypted.fromBase64(storedPasswordBase64);
       // print(storedPasswordBase64);
       final decryptedPassword =
           encrypter.decrypt(storedPassword, iv: iv);
-      print(decryptedPassword);
 
       // if password is correct
       if (password == decryptedPassword) 

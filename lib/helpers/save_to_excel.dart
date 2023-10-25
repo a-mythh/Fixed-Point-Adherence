@@ -21,30 +21,28 @@ class ExcelHelper {
   ExcelHelper.internal();
 
   Future<String?> _getExcelDirectory() async {
-  try {
+    try {
+      final excelDirectory = Directory('/storage/emulated/0/Documents/');
 
-    final excelDirectory = Directory('/storage/emulated/0/Documents/');
+      if (!await excelDirectory.exists()) {
+        await excelDirectory.create(recursive: true);
+      }
 
-    if (!await excelDirectory.exists()) {
-      await excelDirectory.create(recursive: true);
+      return excelDirectory.path;
+    } catch (e) {
+      return null;
     }
-
-    return excelDirectory.path;
-  } catch (e) {
-    return null;
   }
-}
 
-Future<Uint8List> imgDecode(String encodedImage) async {
-  //decode the image back to binary for image conversion
-  final Uint8List uint8List = base64Decode(encodedImage);
-  return uint8List;
-}
-
+  Future<Uint8List> imgDecode(String encodedImage) async {
+    //decode the image back to binary for image conversion
+    final Uint8List uint8List = base64Decode(encodedImage);
+    return uint8List;
+  }
 
   Future<void> saveToExcel() async {
-
-    Future<List<Map<String, dynamic>>?> data = DatabaseHelper().getRecordsData();
+    Future<List<Map<String, dynamic>>?> data =
+        DatabaseHelper().getRecordsData();
 
     final excelDirectory = await _getExcelDirectory();
     if (excelDirectory == null) {
@@ -78,7 +76,8 @@ Future<Uint8List> imgDecode(String encodedImage) async {
 
 // Create or open the workbook
     final Workbook workbook = Workbook();
-    final sheetName = 'Date_${DateFormat('dd-MMMM-yyyy').format(DateTime.now())}';
+    final sheetName =
+        'Date_${DateFormat('dd-MMMM-yyyy').format(DateTime.now())}';
     Worksheet? sheet;
 
 // Check if the sheet already exists
@@ -177,7 +176,7 @@ Future<Uint8List> imgDecode(String encodedImage) async {
       );
     }
 
-    if(fetchedData != null) {
+    if (fetchedData != null) {
       for (var row in fetchedData) {
         final int excelRow = sheet.getLastRow() + 1;
 
@@ -194,28 +193,24 @@ Future<Uint8List> imgDecode(String encodedImage) async {
 
         sheet.getRangeByName('E$excelRow').setText(row['pathType']);
 
-
-        if(row['pathType'] == "OK") {
+        if (row['pathType'] == "OK") {
           sheet.getRangeByName('E$excelRow').cellStyle = cellStyleOk;
-        }
-
-        else {
+        } else {
           sheet.getRangeByName('E$excelRow').cellStyle = cellStyleNotOk;
         }
 
-
         // Convert the image to bytes then to picture to paste it into excel
 
-        if(row['imagePath'] != null) {
+        if (row['imagePath'] != null) {
           final File imageFile = File(row['imagePath']);
           Uint8List imageBytes = await imageFile.readAsBytes();
           // Add the image bytes to the worksheet
-          final Picture picture = sheet.pictures.addStream(excelRow, sheet.getLastColumn(), imageBytes);
+          final Picture picture = sheet.pictures
+              .addStream(excelRow, sheet.getLastColumn(), imageBytes);
           picture.height = 294;
           picture.width = 294;
           picture.rotation = 90;
         }
-
       }
     }
 
@@ -233,12 +228,12 @@ Future<Uint8List> imgDecode(String encodedImage) async {
 
     // Show a success toast message
     Fluttertoast.showToast(
-      msg: "Excel saved to Documents folder!", //Data successfully saved to Excel successfully!
+      msg:
+          "Excel saved to Documents folder!", //Data successfully saved to Excel successfully!
       toastLength: Toast.LENGTH_LONG,
       gravity: ToastGravity.BOTTOM,
       backgroundColor: Colors.green,
       textColor: Colors.white,
     );
   }
-
 }

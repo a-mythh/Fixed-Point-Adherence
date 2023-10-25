@@ -1,6 +1,5 @@
-
+import 'package:Fixed_Point_Adherence/screens/admin.dart';
 import 'package:flutter/material.dart';
-import 'package:Fixed_Point_Adherence/main.dart';
 import 'package:Fixed_Point_Adherence/models/zone_details.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:Fixed_Point_Adherence/helpers/database_helper.dart';
@@ -17,8 +16,6 @@ class NewLocationDetailsSubmitForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-      // title bar
       appBar: AppBar(
 
         title: const Text("Submit New Location Data"),
@@ -58,7 +55,7 @@ class NewLocationDetailsSubmitForm extends StatelessWidget {
               ),
 
               title: Text(newLocationDetails.plantName,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: "Roboto",
                   fontSize: 20,
                   fontWeight: FontWeight.w500,
@@ -67,7 +64,7 @@ class NewLocationDetailsSubmitForm extends StatelessWidget {
 
             ),
 
-            SizedBox(height: 15.0,),
+            const SizedBox(height: 15.0,),
 
             // show zone name
             ListTile(
@@ -86,7 +83,7 @@ class NewLocationDetailsSubmitForm extends StatelessWidget {
               ),
 
               title: Text(newLocationDetails.zoneName,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: "Roboto",
                   fontSize: 20,
                   fontWeight: FontWeight.w500,
@@ -123,7 +120,7 @@ class NewLocationDetailsSubmitForm extends StatelessWidget {
 
             ),
 
-            SizedBox(height: 40.0,),
+            const SizedBox(height: 40.0,),
 
 
             // Save details button -> save to db

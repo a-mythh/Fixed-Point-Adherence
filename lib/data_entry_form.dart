@@ -1,3 +1,4 @@
+import 'package:Fixed_Point_Adherence/models/plant_zone.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
@@ -38,6 +39,89 @@ class _DataEntryFormState extends State<DataEntryForm> {
   void initState() {
     _date_picked_Controller.text = "";
     super.initState();
+    _loadPlants();
+    _loadZones();
+  }
+
+  List<Plant> plants = [];
+  List<Zone> zones = [];
+  Plant _selectedPlant = Plant(id: 0, plantName: 'None');
+  Zone _selectedZone = Zone(id: 0, zoneName: 'None', plantId: 0);
+  int _selectedPlantId = 0;
+  bool _isLoading = true;
+  String _error = '';
+
+  // load plants to display
+  void _loadPlants() async {
+    try {
+      final fetchedPlants = await databaseHelper.getPlants();
+
+      // when no data is present in database
+      if (fetchedPlants == null) {
+        setState(() {
+          _isLoading = false;
+        });
+        return null;
+      }
+
+      final List<Plant> loadedPlants = [];
+
+      for (final row in fetchedPlants) {
+        int id = row['id'];
+        String plantName = row['plantName'];
+
+        Plant plant = Plant(id: id, plantName: plantName);
+        loadedPlants.add(plant);
+      }
+
+      setState(() {
+        plants = loadedPlants;
+        _isLoading = false;
+      });
+    } catch (error) {
+      setState(() {
+        _error = 'Something went wrong. Please try again later!';
+        print(error);
+      });
+    }
+
+    _selectedPlant = plants[0];
+  }
+
+  // load zones to display
+  Future<void> _loadZones() async {
+    try {
+      final fetchedZones = await databaseHelper.getZones(_selectedPlant);
+
+      // when no data is present in database
+      if (fetchedZones == null) {
+        setState(() {
+          _isLoading = false;
+        });
+        return null;
+      }
+
+      final List<Zone> loadedZones = [];
+
+      for (final row in fetchedZones) {
+        int id = row['id'];
+        String zoneName = row['zoneName'];
+        int plantId = row['plantId'];
+
+        Zone zone = Zone(id: id, zoneName: zoneName, plantId: plantId);
+        loadedZones.add(zone);
+      }
+
+      setState(() {
+        zones = loadedZones;
+        _isLoading = false;
+      });
+    } catch (error) {
+      setState(() {
+        _error = 'Something went wrong. Please try again later!';
+        print(error);
+      });
+    }
   }
 
   // function to open date picker
@@ -45,13 +129,13 @@ class _DataEntryFormState extends State<DataEntryForm> {
     DateTime? datePicked = await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
-        firstDate: DateTime(2022),
+        firstDate: DateTime(2023),
         lastDate: DateTime.now());
 
     if (datePicked != null) {
       setState(() {
         _date_picked_Controller.text =
-            DateFormat('dd-MMMM-yyyy').format(datePicked);
+            DateFormat('dd-MM-yyyy').format(datePicked);
       });
     }
   }
@@ -75,9 +159,6 @@ class _DataEntryFormState extends State<DataEntryForm> {
     }
   }
 
-  // // declare variables here
-  // List<Map<String, dynamic>>? _plantListData;
-  //List<Map<String, dynamic>>? _zoneListData;
   final List<String> plantList = [
     'Avadi',
     'Anna Nagar',
@@ -92,14 +173,6 @@ class _DataEntryFormState extends State<DataEntryForm> {
     'Zone 4',
     'Zone 5'
   ];
-  //
-  // void fetchDataFromDatabase() async {
-  //   _plantListData = await DatabaseHelper().getRecordsPlants();
-  //
-  //   for (var row in _plantListData!) { // Cast the value to String
-  //     plantList.add(row['plantName']); // Remove the null-safe access operator '?'
-  //   }
-  // }
 
   // declare controllers here
   final TextEditingController _date_picked_Controller = TextEditingController();
@@ -147,33 +220,36 @@ class _DataEntryFormState extends State<DataEntryForm> {
                 children: [
                   // select plant
                   DropdownButtonFormField(
-                    // add some decoration to the drop down menu
                     decoration: const InputDecoration(
-                      labelText: "Select Plant",
+                      labelText: 'Select Plant',
                       prefixIcon: Icon(
                         Icons.factory_rounded,
-                        color: Colors.deepPurple,
+                        color: Colors.blue,
                       ),
-                      border: OutlineInputBorder(),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(30)),
+                      ),
                     ),
 
-                    // list of items to show in the plant drop down menu
-                    items: plantList.map((plantName) => DropdownMenuItem(
-                          value: plantName,
-                          child: Text(plantName),
-                        )).toList(), //plantList
-
-                    // what happens when a value is selected
-                    onChanged: (value) {
+                    // value: _selectedPlant,
+                    items: plants
+                        .map(
+                          (plant) => DropdownMenuItem(
+                            value: plant,
+                            child: Text(plant.plantName),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (plant) {
                       setState(() {
-                        _selected_plant = value as String;
+                        _selectedPlant = plant!;
+                        _selectedPlantId = plant.id;
+                        _loadZones();
                       });
                     },
                   ),
 
-                  const SizedBox(
-                    height: 40,
-                  ),
+                  const SizedBox(height: 40),
 
                   // select date
                   TextFormField(
@@ -183,61 +259,61 @@ class _DataEntryFormState extends State<DataEntryForm> {
                     decoration: const InputDecoration(
                       labelText: "Select Date",
                       prefixIcon: Icon(Icons.calendar_month_rounded,
-                          color: Colors.deepPurple),
-                      border: OutlineInputBorder(),
+                          color: Colors.blue),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(30)),
+                      ),
                     ),
                   ),
 
-                  const SizedBox(
-                    height: 40,
-                  ),
+                  const SizedBox(height: 40),
 
                   // select zone
-                  IgnorePointer(
-                    ignoring:
-                        _selected_plant == null || _selected_plant!.isEmpty,
-                    child: DropdownButtonFormField(
-                      // add some decoration to the drop down menu
-                      decoration: const InputDecoration(
-                        labelText: "Select Zone",
-                        prefixIcon: Icon(
-                          Icons.room_rounded,
-                          color: Colors.deepPurple,
-                        ),
-                        border: OutlineInputBorder(),
+                  DropdownButtonFormField<Zone>(
+                    decoration: const InputDecoration(
+                      labelText: 'Select Zone',
+                      prefixIcon: Icon(
+                        Icons.room_rounded,
+                        color: Colors.blue,
                       ),
-
-                      // list of items to show in the zone drop down menu
-                      items: zoneList.map((zoneName) => DropdownMenuItem(
-                          value: zoneName,
-                          child: Text(zoneName),
-                        )).toList(), //_zoneList
-
-                      // what happens when a value is selected
-                      onChanged: (value) {
-                        setState(() {
-                          _selected_zone = value as String;
-                        });
-                      },
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(30)),
+                      ),
                     ),
+                    value: zones.isNotEmpty ? zones.first : null,
+                    items: zones.isEmpty
+                        ? null
+                        : zones
+                            .map(
+                              (zone) => DropdownMenuItem(
+                                value: zone,
+                                child: Text(zone.zoneName),
+                              ),
+                            )
+                            .toList(), //_zoneList
+
+                    onChanged: (zone) {
+                      setState(() {
+                        _selectedZone = zone!;
+                      });
+                    },
                   ),
 
-                  const SizedBox(
-                    height: 40,
-                  ),
+                  const SizedBox(height: 40),
 
+                  // select zone leader
                   TextFormField(
                     controller: _zone_leader_Controller,
                     decoration: const InputDecoration(
-                      labelText: "Enter Zone Leader",
-                      prefixIcon: Icon(Icons.person, color: Colors.deepPurple),
-                      border: OutlineInputBorder(),
+                      labelText: 'Enter Zone Leader',
+                      prefixIcon: Icon(Icons.person, color: Colors.blue),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(30)),
+                      ),
                     ),
                   ),
 
-                  const SizedBox(
-                    height: 40,
-                  ),
+                  const SizedBox(height: 40),
 
                   // button for clicking picture
                   Align(
@@ -252,7 +328,7 @@ class _DataEntryFormState extends State<DataEntryForm> {
                                 children: [
                                   Icon(
                                     Icons.camera_alt_rounded,
-                                    color: Colors.deepPurple,
+                                    color: Colors.blue,
                                   ),
                                   SizedBox(
                                     width: 10,
@@ -269,7 +345,7 @@ class _DataEntryFormState extends State<DataEntryForm> {
                                   ),
                                   Icon(
                                     Icons.replay_rounded,
-                                    color: Colors.deepPurple,
+                                    color: Colors.blue,
                                   ),
                                 ],
                               ),
@@ -277,9 +353,7 @@ class _DataEntryFormState extends State<DataEntryForm> {
                     ),
                   ),
 
-                  const SizedBox(
-                    height: 40,
-                  ),
+                  const SizedBox(height: 40),
 
                   // buttons for ok and not ok
                   Row(
@@ -288,7 +362,8 @@ class _DataEntryFormState extends State<DataEntryForm> {
                       // OK button
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          textStyle: TextStyle(fontWeight: FontWeight.bold),
+                          textStyle:
+                              const TextStyle(fontWeight: FontWeight.bold),
                           backgroundColor:
                               const Color.fromARGB(255, 71, 221, 76),
                           foregroundColor: Colors.white,
@@ -298,10 +373,10 @@ class _DataEntryFormState extends State<DataEntryForm> {
                           if (_formKey.currentState!.validate()) {
                             ZoneDetails zoneDetails = ZoneDetails();
 
-                            zoneDetails.plantName = _selected_plant!;
+                            zoneDetails.plantName = _selectedPlant.plantName;
                             zoneDetails.datePicked =
                                 _date_picked_Controller.text;
-                            zoneDetails.zoneName = _selected_zone!;
+                            zoneDetails.zoneName = _selectedZone.zoneName;
                             zoneDetails.zoneLeader =
                                 _zone_leader_Controller.text;
                             zoneDetails.pathType = "OK";
@@ -320,14 +395,13 @@ class _DataEntryFormState extends State<DataEntryForm> {
                         child: const Text("OK"),
                       ),
 
-                      SizedBox(
-                        width: 50,
-                      ),
+                      const SizedBox(width: 50),
 
                       // Not OK Button
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          textStyle: TextStyle(fontWeight: FontWeight.bold),
+                          textStyle:
+                              const TextStyle(fontWeight: FontWeight.bold),
                           backgroundColor: Colors.red,
                           foregroundColor: Colors.white,
                           minimumSize: const Size(100, 50),
@@ -336,10 +410,10 @@ class _DataEntryFormState extends State<DataEntryForm> {
                           if (_formKey.currentState!.validate()) {
                             ZoneDetails zoneDetails = ZoneDetails();
 
-                            zoneDetails.plantName = _selected_plant!;
+                            zoneDetails.plantName = _selectedPlant.plantName;
                             zoneDetails.datePicked =
                                 _date_picked_Controller.text;
-                            zoneDetails.zoneName = _selected_zone!;
+                            zoneDetails.zoneName = _selectedZone.zoneName;
                             zoneDetails.zoneLeader =
                                 _zone_leader_Controller.text;
                             zoneDetails.pathType = "Not OK";
@@ -348,7 +422,6 @@ class _DataEntryFormState extends State<DataEntryForm> {
                             // Go to submit page
                             Navigator.push(context,
                                 MaterialPageRoute(builder: (context) {
-                              // return Details(zoneDetails: zoneDetails);
                               return ZoneDetailsSubmitForm(
                                 zoneDetails: zoneDetails,
                               );
@@ -361,27 +434,7 @@ class _DataEntryFormState extends State<DataEntryForm> {
                   )
                 ],
               )),
-          const SizedBox(
-            height: 10,
-          ),
-          ElevatedButton(
-            onPressed: () {
-              excelHelper.saveToExcel(); // Save To Excel Button
-            },
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.file_download,
-                  color: Colors.deepPurple,
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Text('Generate Excel'),
-              ],
-            ),
-          )
+          const SizedBox(height: 10),
         ],
       ),
     );

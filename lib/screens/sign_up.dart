@@ -43,13 +43,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextFormField(
-                controller: _usernameController,
-                decoration: const InputDecoration(labelText: 'Username')),
+              controller: _usernameController,
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 30,
+                  vertical: 20,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                labelText: 'Username',
+              ),
+            ),
+            const SizedBox(height: 30),
             TextFormField(
               controller: _passwordController,
               decoration: InputDecoration(
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 30,
+                  vertical: 20,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
                 labelText: 'Password',
                 suffixIcon: IconButton(
+                  padding: const EdgeInsets.only(right: 20),
                   icon: Icon(
                       _showPassword ? Icons.visibility_off : Icons.visibility),
                   onPressed: () {
@@ -61,18 +80,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               obscureText: !_showPassword,
             ),
-            const SizedBox(
-              height: 30,
-            ),
+            const SizedBox(height: 30),
             DropdownButtonFormField(
+              borderRadius: BorderRadius.circular(30),
               // add some decoration to the drop down menu
               decoration: const InputDecoration(
-                labelText: "Select User Type",
+                labelText: "Select Account Type",
                 prefixIcon: Icon(
                   Icons.admin_panel_settings,
                   color: Colors.deepPurple,
                 ),
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(30))),
               ),
 
               // list of items to show in the plant drop down menu
@@ -90,12 +109,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 });
               },
             ),
-            const SizedBox(
-              height: 20,
-            ),
+            const SizedBox(height: 40),
             ElevatedButton(
                 onPressed: () => _onSignUpPressed(context),
-                child: const Text('Sign User Up')),
+                child: const Text('Sign Up')),
           ],
         ),
       ),

@@ -26,8 +26,7 @@ class DataEntry extends StatelessWidget {
               padding: const EdgeInsets.all(1),
             ),
             onPressed: () async {
-              Navigator.pop(context);
-              Navigator.pushReplacementNamed(context, '/');
+              Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
 
               await Fluttertoast.showToast(
                 msg: 'User successfully logged out!',

@@ -51,9 +51,7 @@ class AuthModule {
   static Future<Map<String, dynamic>> login(
     String username,
     String password,
-  ) 
-  async 
-  {
+  ) async {
     // stores the user type and if allowed to login
     Map<String, dynamic> result = {
       'userType': 'user',
@@ -61,11 +59,11 @@ class AuthModule {
     };
 
     // get user details if it exists
-    List<Map<String, dynamic>>? singleUserDetails = await DatabaseHelper().getRecordsSingleUser(username);
+    List<Map<String, dynamic>>? singleUserDetails =
+        await DatabaseHelper().getRecordsSingleUser(username);
 
     // if user does not exist show error
-    if (singleUserDetails == null) 
-    {
+    if (singleUserDetails == null) {
       Fluttertoast.showToast(
         msg: 'Username is not registered!',
         toastLength: Toast.LENGTH_LONG,
@@ -83,20 +81,16 @@ class AuthModule {
     final accType = dataRow['accType'];
 
     // check if password is present for that user
-    if (storedPasswordBase64 != null) 
-    {
+    if (storedPasswordBase64 != null) {
       // decrpyt the password
       final storedPassword = encrypt.Encrypted.fromBase64(storedPasswordBase64);
       // print(storedPasswordBase64);
-      final decryptedPassword =
-          encrypter.decrypt(storedPassword, iv: iv);
+      final decryptedPassword = encrypter.decrypt(storedPassword, iv: iv);
 
       // if password is correct
-      if (password == decryptedPassword) 
-      {
+      if (password == decryptedPassword) {
         // login as normal user
-        if (accType == 'user') 
-        {
+        if (accType == 'user') {
           // show message on successful login
           Fluttertoast.showToast(
             msg: 'Successfully Logged In!',
@@ -112,8 +106,7 @@ class AuthModule {
         }
 
         // login as administrative user
-        else if (accType == 'admin') 
-        {
+        else if (accType == 'admin') {
           // show message on successful login
           Fluttertoast.showToast(
             msg: 'Successfully Logged In!',
@@ -146,10 +139,9 @@ class AuthModule {
   /// ***************** CHANGE PASSWORD ******************
   static Future<bool> resetPassword(
     String username,
-    String password,
     String newPassword,
-  ) async 
-  {
+  ) async {
+    /*
     Future<List<Map<String, dynamic>>?> data = DatabaseHelper().getRecordsSingleUser(username);
     List<Map<String, dynamic>>? fetchedData = await data;
 
@@ -189,49 +181,43 @@ class AuthModule {
 
         return false;
       }
-      // if password correctly entered
-      else {
-        try {
-          // encrypt and store the password
-          final encryptedPassword = encrypter.encrypt(
-            newPassword,
-            iv: iv,
-          );
+      */
+    // if password correctly entered
+    try {
+      // encrypt and store the password
+      final encryptedPassword = encrypter.encrypt(
+        newPassword,
+        iv: iv,
+      );
 
-          // update the user's password in the database
-          await databaseHelper
-              .updateRecordUserPassword(username, encryptedPassword.base64)
-              .then(
-            (value) async {
-              // show message on successful password change
-              await Fluttertoast.showToast(
-                msg: 'Password changed successfully!',
-                toastLength: Toast.LENGTH_LONG,
-                gravity: ToastGravity.BOTTOM,
-                backgroundColor: Colors.green,
-                textColor: Colors.white,
-              );
-            },
-          );
-
-          return true;
-        } 
-        catch (e) 
-        {
-          // show error on unsuccesful password change
+      // update the user's password in the database
+      await databaseHelper
+          .updateAccountPassword(username, encryptedPassword.base64)
+          .then(
+        (value) async {
+          // show message on successful password change
           await Fluttertoast.showToast(
-            msg: 'User registration failed!',
+            msg: 'Password changed successfully!',
             toastLength: Toast.LENGTH_LONG,
             gravity: ToastGravity.BOTTOM,
-            backgroundColor: Colors.red,
+            backgroundColor: Colors.green,
             textColor: Colors.white,
           );
+        },
+      );
 
-          return false;
-        }
-      }
+      return true;
+    } catch (e) {
+      // show error on unsuccesful password change
+      await Fluttertoast.showToast(
+        msg: 'Password change unsuccessful!',
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+
+      return false;
     }
-
-    return false;
   }
 }

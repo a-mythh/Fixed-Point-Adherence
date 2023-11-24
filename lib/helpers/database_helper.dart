@@ -1,3 +1,4 @@
+import 'package:Fixed_Point_Adherence/models/plant_zone.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:encrypt/encrypt.dart';
@@ -7,15 +8,13 @@ const String userTable = 'fpa_wipro_users';
 const String plantTable = 'fpa_wipro_plants';
 const String zoneTable = 'fpa_wipro_zones';
 
-class DatabaseHelper 
-{
+class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._init();
   factory DatabaseHelper() => _instance;
 
   static Database? _db;
 
-  Future<Database> get db async 
-  {
+  Future<Database> get db async {
     if (_db != null) return _db!;
 
     return await initDatabase();
@@ -26,19 +25,23 @@ class DatabaseHelper
   /// ******* Basic Database *********
 
   // initialize database
-  Future<Database> initDatabase() async 
-  {
+  Future<Database> initDatabase() async {
     // create the database
     String databasesPath = await getDatabasesPath();
     String path = join(databasesPath, 'fpa_db.db');
 
     // create/open an instance of the database
-    return await openDatabase(path, version: 1, onCreate: _createDB);
+    return await openDatabase(path,
+        version: 1, onCreate: _createDB, onConfigure: _onConfigure);
+  }
+
+  // configure foreign key
+  Future _onConfigure(Database db) async {
+    await db.execute('PRAGMA foreign_keys = ON');
   }
 
   // create the database tables
-  void _createDB(Database db, int version) async 
-  {
+  void _createDB(Database db, int version) async {
     // Create Data table
     await db.execute('''
         CREATE TABLE $dataTable (
@@ -67,7 +70,8 @@ class DatabaseHelper
     final encryptedPassword = encrypter.encrypt("password", iv: iv);
 
     // insert default user into table
-    await db.insert(userTable, 
+    await db.insert(
+      userTable,
       {
         'username': 'admin',
         'password': encryptedPassword.base64,
@@ -76,191 +80,188 @@ class DatabaseHelper
     );
 
     // Creating table to store different Plants
-    await db.execute(
-      '''
+    await db.execute('''
         CREATE TABLE $plantTable 
         (
-            plantName TEXT PRIMARY KEY NOT NULL
+            id INTEGER PRIMARY KEY,
+            plantName TEXT NOT NULL
         )
-      '''
-    );
+      ''');
 
     // Creating Zones table
-    await db.execute(
-      '''
+    await db.execute('''
         CREATE TABLE $zoneTable (
-          zoneName TEXT PRIMARY KEY, 
-          plantName TEXT, 
-          zoneLeader TEXT, 
-          FOREIGN KEY(plantName) REFERENCES fpa_wipro_plants(plantName)
+          id INTEGER PRIMARY KEY,
+          zoneName TEXT NOT NULL,
+          plantId INTEGER,
+          FOREIGN KEY (plantId) REFERENCES $plantTable (id) ON DELETE CASCADE
         )
       ''');
   }
 
   // Close the database instance
-  Future<void> closeDatabase() async 
-  {
+  Future<void> closeDatabase() async {
     final db = await _instance.db;
     db.close();
   }
-
-
-
-
 
   /// ******* CRUD Data Table ********
 
   // Inserting data in the data table
   Future<void> insertData(
-      String datePicked,
-      String plantName,
-      String zoneName,
-      String zoneLeader,
-      String pathType,
-      String imagePath,
-    ) 
-  async 
-  {
+    String datePicked,
+    String plantName,
+    String zoneName,
+    String zoneLeader,
+    String pathType,
+    String imagePath,
+  ) async {
     final db = await _instance.db;
-    await db.insert(dataTable, 
-      {
-        'datePicked': datePicked,
-        'plantName': plantName,
-        'zoneName': zoneName,
-        'zoneLeader': zoneLeader,
-        'pathType': pathType,
-        'imagePath': imagePath
-      }
-    );
+    await db.insert(dataTable, {
+      'datePicked': datePicked,
+      'plantName': plantName,
+      'zoneName': zoneName,
+      'zoneLeader': zoneLeader,
+      'pathType': pathType,
+      'imagePath': imagePath
+    });
+  }
+
+  // Deleting 1 week old data
+  Future<void> deleteData() async {
+    final db = await _instance.db;
+    await db.delete(dataTable,
+        where:
+            'strftime(\'%s\', date(substr(datepicked, 7) || \'-\' || substr(datepicked, 4, 2) || \'-\' || substr(datepicked, 1, 2))) < strftime(\'%s\', \'now\', \'-8 days\');');
   }
 
   // Get all records from data table
-  Future<List<Map<String, dynamic>>?> getRecordsData() async 
-  {
+  Future<List<Map<String, dynamic>>?> getRecordsData() async {
     final db = await _instance.db;
     return await db.query(dataTable);
   }
 
+  // Get records by date
+  Future<List<Map<String, dynamic>>?> getRecordsDataByDate(String date) async {
+    final db = await _instance.db;
 
+    final dataGivenDate = await db.query(
+      dataTable,
+      where: 'datePicked = ?',
+      whereArgs: [date],
+    );
 
+    return dataGivenDate;
+  }
 
 
   /// ***** CRUD Plant Table *****
 
   // Inserting plant data
-  Future<void> insertRecordPlants(String plantName) async 
-  {
+  Future<void> addNewPlant(Plant plant) async {
     final db = await _instance.db;
-    await db.insert(plantTable, {'plantName': plantName});
+    await db.insert(plantTable, {
+      'id': plant.id,
+      'plantName': plant.plantName,
+    });
   }
 
   // Getting plant data
-  Future<List<Map<String, dynamic>>?> getRecordsPlants() async 
-  {
+  Future<List<Map<String, dynamic>>?> getPlants() async {
     final db = await _instance.db;
-    return await db.query(plantTable);
+    return await db.query(plantTable, orderBy: 'plantName');
   }
 
   // Deleting plant data (also zones along with it)
-  Future<void> deleteRecordPlants(String plantName) async 
-  {
+  Future<void> deletePlant(Plant plant) async {
     final db = await _instance.db;
-    await db.delete(plantTable, where: 'plantName = ?', whereArgs: [plantName]);
-    await db.delete(zoneTable, where: 'plantName = ?', whereArgs: [plantName]);
+    await db.delete(plantTable, where: 'id = ?', whereArgs: [plant.id]);
   }
-
-
-
-
 
   /// ***** CRUD Zone Table *****
 
   // Inserting Zone Data
-  Future<void> insertRecordZones(String zoneName, String zoneLeader, String plantName) async 
-  {
+  Future<void> addNewZone(Zone zone) async {
     final db = await _instance.db;
-    await db.insert(zoneTable, 
-      {
-        'zoneName': zoneName,
-        'plantName': plantName,
-        'zoneLeader': zoneLeader
-      }
-    );
+    await db.insert(zoneTable, {
+      'id': zone.id,
+      'zoneName': zone.zoneName,
+      'plantId': zone.plantId,
+    });
   }
 
   // Getting Zone Data
-  Future<List<Map<String, dynamic>>?> getRecordsZones() async 
-  {
+  Future<List<Map<String, dynamic>>?> getZones(Plant plant) async {
     final db = await _instance.db;
-    return await db.query(zoneTable);
-  }
-
-  // Getting Zone Data of specific Plant
-  Future<List<Map<String, dynamic>>?> getRecordsZonesWrtPlant(String plantName) async 
-  {
-    final db = await _instance.db;
-    return await db.query(zoneTable, where: 'plantName = ?', whereArgs: [plantName]);
+    return await db.query(
+      zoneTable,
+      where: 'plantId = ?',
+      whereArgs: [plant.id],
+      orderBy: 'zoneName',
+    );
   }
 
   // Deleting Zone Data
-  Future<void> deleteRecordZones (String zoneName) async 
-  {
+  Future<void> deleteZone(Zone zone) async {
     final db = await _instance.db;
-    await db.delete('fpa_wipro_zones', where: 'zoneName = ?', whereArgs: [zoneName]);
+    await db.delete(
+      zoneTable,
+      where: 'id = ?',
+      whereArgs: [zone.id],
+    );
   }
-
-
-
 
   /// ********* CRUD User Table **********
 
   // Inserting User Data
-  Future<void> insertRecordUser(String username, String password, String accType) async 
-  {
+  Future<void> insertRecordUser(
+      String username, String password, String accType) async {
     final db = await _instance.db;
-    await db.insert(userTable,
-        {
-          'username': username, 
-          'password': password, 
-          'accType': accType
-        }
-      );
+    await db.insert(userTable, {
+      'username': username,
+      'password': password,
+      'accType': accType,
+    });
   }
 
   // Update Password of User
-  Future<void> updateRecordUserPassword(String username, String password) async 
-  {
+  Future<void> updateAccountPassword(
+      String username, String password) async {
     final db = await _instance.db;
     await db.rawUpdate(
-        'UPDATE $userTable SET password = ? WHERE username = ?',
-        [password, username],
+      'UPDATE $userTable SET password = ? WHERE username = ?',
+      [password, username],
     );
   }
 
   // Getting all the Users' Details
-  Future<List<Map<String, dynamic>>?> getRecordsUser() async 
-  {
+  Future<List<Map<String, dynamic>>?> getsUsersBasedOnAccountType(
+      String accType) async {
     final db = await _instance.db;
-    return await db.query(userTable);
+    return await db.query(
+      userTable,
+      where: 'accType = ?',
+      orderBy: 'username',
+      whereArgs: [accType],
+    );
   }
 
   // Getting single User's Details
-  Future<List<Map<String, dynamic>>?> getRecordsSingleUser(String username) async 
-  {
+  Future<List<Map<String, dynamic>>?> getRecordsSingleUser(
+      String username) async {
     final db = await _instance.db;
 
     final singleUserDetails = await db.query(
-        userTable, 
-        where: 'username = ?', 
-        whereArgs: [username],
-      );
+      userTable,
+      where: 'username = ?',
+      whereArgs: [username],
+    );
 
     return singleUserDetails;
   }
 
   // Deleting User's Details
-  Future<void> deleteRecordUser(String username) async 
-  {
+  Future<void> deleteRecordUser(String username) async {
     final db = await _instance.db;
     await db.delete(userTable, where: 'username = ?', whereArgs: [username]);
   }

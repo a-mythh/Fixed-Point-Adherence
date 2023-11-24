@@ -9,7 +9,6 @@ import 'package:Fixed_Point_Adherence/screens/login.dart';
 import 'package:Fixed_Point_Adherence/screens/sign_up.dart';
 import 'package:Fixed_Point_Adherence/screens/admin.dart';
 import 'package:Fixed_Point_Adherence/screens/data_entry.dart';
-import 'package:Fixed_Point_Adherence/screens/location_registration.dart';
 
 main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,9 +40,8 @@ class App extends StatelessWidget {
         '/': (context) => const HomeScreen(),
         '/login': (context) => const LoginPage(),
         '/home': (context) => const DataEntry(),
-        '/admin': (context) => const AdminPage(),
+        // '/admin': (context) => const AdminPage(),
         '/new_user': (context) => const SignUpScreen(),
-        '/new_location': (context) => const NewLocationPage(),
       },
     );
   }

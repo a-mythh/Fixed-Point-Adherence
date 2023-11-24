@@ -1,3 +1,4 @@
+import 'package:Fixed_Point_Adherence/screens/admin.dart';
 import 'package:flutter/material.dart';
 
 // import Authentication module
@@ -36,7 +37,11 @@ class _LoginPageState extends State<LoginPage> {
       if (isLoggedIn['userType'] == 'user') {
         Navigator.pushReplacementNamed(context, '/home');
       } else if (isLoggedIn['userType'] == 'admin') {
-        Navigator.pushReplacementNamed(context, '/admin');
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AdminPage(username: username),
+            ));
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

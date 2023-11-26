@@ -62,15 +62,18 @@ class AuthModule {
     List<Map<String, dynamic>>? singleUserDetails =
         await DatabaseHelper().getRecordsSingleUser(username);
 
+    // print(singleUserDetails!.isEmpty.toString() + ' hi');
+
     // if user does not exist show error
-    if (singleUserDetails == null) {
-      Fluttertoast.showToast(
-        msg: 'Username is not registered!',
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-      );
+    if (singleUserDetails!.isEmpty) {
+      
+      // Fluttertoast.showToast(
+      //   msg: 'Invalid credentials! Please try again.',
+      //   toastLength: Toast.LENGTH_LONG,
+      //   gravity: ToastGravity.BOTTOM,
+      //   backgroundColor: Colors.red,
+      //   textColor: Colors.white,
+      // );
 
       return result;
     }
@@ -92,13 +95,13 @@ class AuthModule {
         // login as normal user
         if (accType == 'user') {
           // show message on successful login
-          Fluttertoast.showToast(
-            msg: 'Successfully Logged In!',
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: Colors.green,
-            textColor: Colors.white,
-          );
+          // Fluttertoast.showToast(
+          //   msg: 'Successfully Logged In!',
+          //   toastLength: Toast.LENGTH_LONG,
+          //   gravity: ToastGravity.BOTTOM,
+          //   backgroundColor: Colors.green,
+          //   textColor: Colors.white,
+          // );
 
           result['isLogin'] = true;
 

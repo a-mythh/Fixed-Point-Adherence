@@ -11,17 +11,27 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  var _enteredUsername = '';
+  var _enteredPassword = '';
+
   final List<String> _accTypeList = ['User', 'Admin'];
-  String _selected_accType = '';
+  String _selectedAccType = '';
   bool _showPassword =
       false; // Add a new bool variable to track the show/hide password state
 
   void _onSignUpPressed(BuildContext context) async {
-    String username = _usernameController.text;
-    String password = _passwordController.text;
-    String accType = _selected_accType.toLowerCase();
+    bool isValid = _formKey.currentState!.validate();
+
+    // Invalid details entered
+    if (!isValid) return;
+
+    _formKey.currentState!.save();
+
+    String username = _enteredUsername;
+    String password = _enteredPassword;
+    String accType = _selectedAccType.toLowerCase();
 
     AuthModule.signUp(username, password, accType);
 
@@ -32,88 +42,168 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('New User Registration'),
+        title: const Text('Account Registration'),
         centerTitle: true,
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextFormField(
-              controller: _usernameController,
-              decoration: InputDecoration(
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 30,
-                  vertical: 20,
+        padding: const EdgeInsets.symmetric(horizontal: 30),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // enter username
+              TextFormField(
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Please enter a username.';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _enteredUsername = value!;
+                },
+                autocorrect: false,
+                keyboardType: TextInputType.name,
+                decoration: InputDecoration(
+                  fillColor: Colors.white,
+                  filled: true,
+                  prefixIcon: const Icon(Icons.alternate_email_rounded),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 30,
+                    vertical: 20,
+                  ),
+                  floatingLabelBehavior: FloatingLabelBehavior.never,
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      borderSide: BorderSide.none),
+                  labelText: 'Username',
                 ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                labelText: 'Username',
-              ),
-            ),
-            const SizedBox(height: 30),
-            TextFormField(
-              controller: _passwordController,
-              decoration: InputDecoration(
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 30,
-                  vertical: 20,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                labelText: 'Password',
-                suffixIcon: IconButton(
-                  padding: const EdgeInsets.only(right: 20),
-                  icon: Icon(
-                      _showPassword ? Icons.visibility_off : Icons.visibility),
-                  onPressed: () {
-                    setState(() {
-                      _showPassword = !_showPassword;
-                    });
-                  },
-                ),
-              ),
-              obscureText: !_showPassword,
-            ),
-            const SizedBox(height: 30),
-            DropdownButtonFormField(
-              borderRadius: BorderRadius.circular(30),
-              // add some decoration to the drop down menu
-              decoration: const InputDecoration(
-                labelText: "Select Account Type",
-                prefixIcon: Icon(
-                  Icons.admin_panel_settings,
-                  color: Colors.deepPurple,
-                ),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(30))),
               ),
 
-              // list of items to show in the plant drop down menu
-              items: _accTypeList
-                  .map((plant) => DropdownMenuItem(
-                        value: plant,
-                        child: Text(plant),
-                      ))
-                  .toList(),
+              const SizedBox(height: 20),
 
-              // what happens when a value is selected
-              onChanged: (value) {
-                setState(() {
-                  _selected_accType = value as String;
-                });
-              },
-            ),
-            const SizedBox(height: 40),
-            ElevatedButton(
-                onPressed: () => _onSignUpPressed(context),
-                child: const Text('Sign Up')),
-          ],
+              // enter a password
+              TextFormField(
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Please enter a password.';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _enteredPassword = value!;
+                },
+                autocorrect: false,
+                keyboardType: TextInputType.name,
+                decoration: InputDecoration(
+                  fillColor: Colors.white,
+                  filled: true,
+                  prefixIcon: const Icon(Icons.lock_outline),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 30,
+                    vertical: 20,
+                  ),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      borderSide: BorderSide.none),
+                  labelText: 'Password',
+                  floatingLabelBehavior: FloatingLabelBehavior.never,
+                  suffixIcon: IconButton(
+                    padding: const EdgeInsets.only(right: 20),
+                    icon: Icon(_showPassword
+                        ? Icons.visibility_off
+                        : Icons.visibility),
+                    onPressed: () {
+                      setState(() {
+                        _showPassword = !_showPassword;
+                      });
+                    },
+                  ),
+                ),
+                obscureText: !_showPassword,
+              ),
+
+              const SizedBox(height: 20),
+
+              // select account type
+              DropdownButtonFormField(
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Please choose an account type.';
+                  }
+                  return null;
+                },
+                icon: const Icon(Icons.expand_more_rounded),
+                borderRadius: BorderRadius.circular(20),
+                dropdownColor: Colors.white,
+                decoration: const InputDecoration(
+                  fillColor: Colors.white,
+                  filled: true,
+                  labelText: 'Select Account Type',
+                  floatingLabelBehavior: FloatingLabelBehavior.never,
+                  prefixIcon: Icon(Icons.supervisor_account_outlined),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 30,
+                    vertical: 20,
+                  ),
+                  border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.all(Radius.circular(25))),
+                ),
+                items: _accTypeList
+                    .map((plant) => DropdownMenuItem(
+                          value: plant,
+                          child: Text(plant),
+                        ))
+                    .toList(),
+
+                // what happens when a value is selected
+                onChanged: (value) {
+                  setState(() {
+                    _selectedAccType = value as String;
+                  });
+                },
+              ),
+
+              const SizedBox(height: 40),
+
+              // sign up button
+              InkWell(
+                onTap: () => _onSignUpPressed(context),
+                borderRadius: BorderRadius.circular(15),
+                splashColor: Theme.of(context).primaryColor,
+                child: Container(
+                  height: 55,
+                  width: 140,
+                  padding: const EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.black.withOpacity(0.77),
+                        Colors.black.withOpacity(0.85),
+                        Colors.black.withOpacity(1),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Sign up',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge!
+                          .copyWith(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

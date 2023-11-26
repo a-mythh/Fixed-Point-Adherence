@@ -21,11 +21,11 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
   bool _isLoading = false;
   String _error = '';
 
-
   // load zones to display
   void _loadAccounts() async {
     try {
-      final fetchedAccounts = await databaseHelper.getsUsersBasedOnAccountType(_selectedAccType.toLowerCase());
+      final fetchedAccounts = await databaseHelper
+          .getsUsersBasedOnAccountType(_selectedAccType.toLowerCase());
 
       // when no data is present in database
       if (fetchedAccounts == null) {
@@ -42,7 +42,8 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
         String password = row['password'];
         String accType = row['accType'];
 
-        User user = User(username: username, password: password, accType: accType);
+        User user =
+            User(username: username, password: password, accType: accType);
         loadedAccounts.add(user);
       }
 
@@ -72,30 +73,35 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.amber.shade200,
+        backgroundColor: Colors.transparent,
         title: const Text('Manage Users'),
         centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(
-          horizontal: 20,
+          horizontal: 30,
           vertical: 20,
         ),
         child: Column(
           children: [
-
             // dropdown to select account type
             DropdownButtonFormField(
-              borderRadius: BorderRadius.circular(30),
-              // add some decoration to the drop down menu
-              decoration: const InputDecoration(
-                contentPadding: EdgeInsets.symmetric(
+              icon: const Icon(Icons.expand_more_rounded),
+              dropdownColor: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(20),
+              decoration: InputDecoration(
+                fillColor: Theme.of(context).colorScheme.surface,
+                filled: true,
+                floatingLabelBehavior: FloatingLabelBehavior.never,
+                prefixIcon: const Icon(Icons.supervisor_account_outlined),
+                contentPadding: const EdgeInsets.symmetric(
                   horizontal: 30,
                   vertical: 20,
                 ),
-                labelText: "Select Account Type",
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(30))),
+                labelText: 'Select Account Type',
+                border: const OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.all(Radius.circular(25))),
               ),
 
               items: _accTypeList
@@ -113,7 +119,7 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
                 });
               },
             ),
-          
+
             const SizedBox(height: 30),
 
             // display accounts present in that given account type
@@ -125,7 +131,8 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
                     (user) => UserItem(
                       user: user,
                       deleteUser: _deleteUser,
-                      disabled: user.username == widget.currentUser ? true : false,
+                      disabled:
+                          user.username == widget.currentUser ? true : false,
                     ),
                   )
                 ],

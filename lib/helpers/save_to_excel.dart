@@ -145,7 +145,7 @@ class ExcelHelper
     return uint8List;
   }
 
-  Future<void> saveTodaysDataToExcel() async
+  Future<bool> saveTodaysDataToExcel() async
   {
     String date = DateFormat('dd-MM-yyyy').format(DateTime.now());
 
@@ -154,14 +154,7 @@ class ExcelHelper
     
     // if data not present
     if (fetchedData == null) {
-      Fluttertoast.showToast(
-        msg: 'DATA NOT THERE!',
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-      );
-      return;
+      return false;
     }
 
 
@@ -172,14 +165,7 @@ class ExcelHelper
 
     // if unable to create excel sheet
     if (excelDirectory == null) {
-      Fluttertoast.showToast(
-        msg: 'Error retrieving Excel workbook directory!',
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-      );
-      return;
+      return false;
     }
 
     // get permission to store excel file
@@ -245,30 +231,17 @@ class ExcelHelper
 
 
     // Show a success toast message
-    Fluttertoast.showToast(
-      msg: "Excel saved to Documents folder!",
-      toastLength: Toast.LENGTH_LONG,
-      gravity: ToastGravity.BOTTOM,
-      backgroundColor: Colors.green,
-      textColor: Colors.white,
-    );
+    return true;
   }
 
-  Future<void> saveGivenDatesDataToExcel(String date) async
+  Future<bool> saveGivenDatesDataToExcel(String date) async
   {
     // retrieve the data
     List<Map<String, dynamic>>? fetchedData = await DatabaseHelper().getRecordsDataByDate(date);
     
     // if data not present
     if (fetchedData == null) {
-      Fluttertoast.showToast(
-        msg: 'DATA NOT THERE!',
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-      );
-      return;
+      return false;
     }
 
 
@@ -279,14 +252,7 @@ class ExcelHelper
 
     // if unable to create excel sheet
     if (excelDirectory == null) {
-      Fluttertoast.showToast(
-        msg: 'Error retrieving Excel workbook directory!',
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-      );
-      return;
+      return false;
     }
 
     // get permission to store excel file
@@ -351,14 +317,7 @@ class ExcelHelper
     workbook.dispose();
 
 
-    // Show a success toast message
-    Fluttertoast.showToast(
-      msg: "Excel saved to Documents folder!",
-      toastLength: Toast.LENGTH_LONG,
-      gravity: ToastGravity.BOTTOM,
-      backgroundColor: Colors.green,
-      textColor: Colors.white,
-    );
+    return true;
   }
 
 

@@ -10,6 +10,9 @@ class ZoneItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(25)
+      ),
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: Padding(
         padding: const EdgeInsets.symmetric(
@@ -19,9 +22,11 @@ class ZoneItem extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              zone.zoneName,
-              style: Theme.of(context).textTheme.bodyLarge,
+            Expanded(
+              child: Text(
+                zone.zoneName,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
             ),
             IconButton(
               onPressed: () async {
@@ -32,6 +37,7 @@ class ZoneItem extends StatelessWidget {
                     title: const Text('Are you sure?',
                         textAlign: TextAlign.center),
                     content: RichText(
+                      textAlign: TextAlign.center,
                       text: TextSpan(
                           style: Theme.of(context).textTheme.bodyLarge,
                           children: [
@@ -54,9 +60,13 @@ class ZoneItem extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () => Navigator.pop(context, true),
-                        child: const Text(
+                        child: Text(
                           'Delete',
-                          style: TextStyle(color: Colors.red),
+                          style: Theme.of(context).textTheme.bodyLarge!.
+                          copyWith(
+                            color: Theme.of(context).colorScheme.error,
+                            fontWeight: FontWeight.bold
+                          ),
                         ),
                       ),
                     ],

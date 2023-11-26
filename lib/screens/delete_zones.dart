@@ -115,31 +115,37 @@ class _DeleteZonesScreenState extends State<DeleteZonesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.red.shade300,
+        backgroundColor: Colors.transparent,
         title: const Text('Delete Zones'),
         centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(
-          horizontal: 20,
+          horizontal: 30,
           vertical: 20,
         ),
         child: Column(
           children: [
             // dropdown menu to select plant
             DropdownButtonFormField<Plant>(
+              icon: const Icon(Icons.expand_more_rounded),
+              dropdownColor: Theme.of(context).colorScheme.surface,
               decoration: InputDecoration(
+                fillColor: Theme.of(context).colorScheme.surface,
+                filled: true,
+                floatingLabelBehavior: FloatingLabelBehavior.never,
+                prefixIcon: const Icon(Icons.factory_rounded),
                 labelText: 'Select Plant',
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 20,
                   vertical: 20,
                 ),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(25),
                 ),
               ),
               borderRadius: BorderRadius.circular(20),
-              // value: _selectedPlant,
               items: plants
                   .map(
                     (plant) => DropdownMenuItem(

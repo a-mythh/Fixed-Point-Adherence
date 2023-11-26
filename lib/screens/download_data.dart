@@ -1,4 +1,5 @@
 import 'package:Fixed_Point_Adherence/helpers/save_to_excel.dart';
+import 'package:Fixed_Point_Adherence/utility/CustomSnackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -51,7 +52,7 @@ class _DownloadDataScreenState extends State<DownloadDataScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Download Data'),
-        backgroundColor: Colors.green.shade200,
+        backgroundColor: Colors.transparent,
         centerTitle: true,
       ),
       body: Padding(
@@ -66,10 +67,23 @@ class _DownloadDataScreenState extends State<DownloadDataScreen> {
                   setState(() {
                     downloadedToday = false;
                   });
-                  await excelHelper.saveTodaysDataToExcel();
+                  bool status = await excelHelper.saveTodaysDataToExcel();
                   setState(() {
                     downloadedToday = true;
                   });
+
+                  final snackBar = status
+                      ? showCustomSnackbar(
+                          text: 'Download successful.',
+                          colour: 'success',
+                        )
+                      : showCustomSnackbar(
+                          text: 'Downloaded unsuccessful.',
+                          colour: 'failure',
+                        );
+
+                  ScaffoldMessenger.of(context).clearSnackBars();
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 },
                 borderRadius: BorderRadius.circular(15),
                 splashColor: Theme.of(context).primaryColor,
@@ -80,8 +94,9 @@ class _DownloadDataScreenState extends State<DownloadDataScreen> {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Colors.green.withOpacity(0.4),
-                        Colors.green.withOpacity(0.9)
+                        Colors.black.withOpacity(0.77),
+                        Colors.black.withOpacity(0.85),
+                        Colors.black.withOpacity(1),
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -89,20 +104,27 @@ class _DownloadDataScreenState extends State<DownloadDataScreen> {
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: downloadedToday
-                      ? const Column(
+                      ? Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.file_download_rounded),
+                            const Icon(
+                              Icons.file_download_rounded,
+                              color: Colors.white,
+                            ),
+                            const SizedBox(height: 10),
                             Text(
-                              'Download Today\'s Data',
+                              'Today\'s Data',
                               textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(color: Colors.white),
                             ),
                           ],
                         )
                       : const Center(
                           child: CircularProgressIndicator(
                             color: Colors.white,
-                            backgroundColor: Colors.green,
                           ),
                         ),
                 ),
@@ -116,10 +138,13 @@ class _DownloadDataScreenState extends State<DownloadDataScreen> {
                   horizontal: 30,
                   vertical: 10,
                 ),
-                decoration: BoxDecoration(
-                    color: Colors.blue.shade200,
-                    borderRadius: const BorderRadius.all(Radius.circular(20))),
-                child: const Text('Download by date'),
+                decoration: const BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.all(Radius.circular(20))),
+                child: Text(
+                  'Download by date',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
               ),
 
               const SizedBox(height: 30),
@@ -130,27 +155,29 @@ class _DownloadDataScreenState extends State<DownloadDataScreen> {
                 children: [
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 15),
-                    width: 180,
+                    width: 200,
                     child: TextFormField(
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please choose a date.';
+                        }
+                        return null;
+                      },
                       controller: _dateController,
                       readOnly: true,
                       onTap: () => _selectDate(),
                       textAlign: TextAlign.center,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         floatingLabelBehavior: FloatingLabelBehavior.never,
-                        focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(30)),
-                            borderSide:
-                                BorderSide(color: Colors.lime, width: 2)),
+                        fillColor: Theme.of(context).colorScheme.surface,
+                        filled: true,
                         floatingLabelAlignment: FloatingLabelAlignment.center,
-                        contentPadding: EdgeInsets.all(20),
+                        contentPadding: const EdgeInsets.all(20),
                         labelText: "Select Date",
-                        prefixIcon: Icon(
-                          Icons.calendar_month_rounded,
-                          color: Colors.lime,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                        prefixIcon: const Icon(Icons.calendar_month_rounded),
+                        border: const OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.all(Radius.circular(25)),
                         ),
                       ),
                     ),
@@ -158,17 +185,35 @@ class _DownloadDataScreenState extends State<DownloadDataScreen> {
                   InkWell(
                     onTap: () async {
                       if (_dateController.text.isEmpty) {
+                        final snackBar = showCustomSnackbar(
+                          text: 'Please choose a date.',
+                          colour: 'warning',
+                        );
+                        ScaffoldMessenger.of(context).clearSnackBars();
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
                         return;
                       }
                       setState(() {
                         downloadedAnyDate = false;
                       });
-                      print(_dateController.text);
-                      await excelHelper
+                      bool status = await excelHelper
                           .saveGivenDatesDataToExcel(_dateController.text);
                       setState(() {
                         downloadedAnyDate = true;
                       });
+
+                      final snackBar = status
+                          ? showCustomSnackbar(
+                              text: 'Download successful.',
+                              colour: 'success',
+                            )
+                          : showCustomSnackbar(
+                              text: 'Downloaded unsuccessful.',
+                              colour: 'failure',
+                            );
+
+                      ScaffoldMessenger.of(context).clearSnackBars();
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     },
                     borderRadius: BorderRadius.circular(15),
                     splashColor: Theme.of(context).primaryColor,
@@ -178,8 +223,9 @@ class _DownloadDataScreenState extends State<DownloadDataScreen> {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            Colors.lime.withOpacity(0.4),
-                            Colors.lime.withOpacity(0.9)
+                            Colors.black.withOpacity(0.77),
+                            Colors.black.withOpacity(0.85),
+                            Colors.black.withOpacity(1),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
@@ -190,7 +236,10 @@ class _DownloadDataScreenState extends State<DownloadDataScreen> {
                           ? const Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.downloading_rounded),
+                                Icon(
+                                  Icons.downloading_rounded,
+                                  color: Colors.white,
+                                ),
                               ],
                             )
                           : const Center(
@@ -199,7 +248,6 @@ class _DownloadDataScreenState extends State<DownloadDataScreen> {
                                 height: 15,
                                 child: CircularProgressIndicator(
                                   color: Colors.white,
-                                  backgroundColor: Colors.lime,
                                 ),
                               ),
                             ),

@@ -20,7 +20,7 @@ class HomeScreen extends StatelessWidget {
               height: 150,
               width: 150,
               child: Image(
-                image: AssetImage('images/wipro_logo.png'),
+                image: AssetImage('assets/images/wipro_logo.png'),
               ),
             ),
             const SizedBox(

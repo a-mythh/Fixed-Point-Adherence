@@ -1,9 +1,9 @@
 import 'package:Fixed_Point_Adherence/models/plant_zone.dart';
+import 'package:Fixed_Point_Adherence/utility/CustomSnackbar.dart';
 import 'package:flutter/material.dart';
 
 // database
 import 'package:Fixed_Point_Adherence/helpers/database_helper.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 DatabaseHelper databaseHelper = DatabaseHelper();
 
@@ -69,7 +69,7 @@ class _AddZonesScreenState extends State<AddZonesScreen> {
   String _enteredZoneName = '';
   bool _isAdding = false;
 
-  void _addZone() async {
+  void _addZone(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
@@ -87,24 +87,21 @@ class _AddZonesScreenState extends State<AddZonesScreen> {
       try {
         await databaseHelper.addNewZone(zone);
 
-        await Fluttertoast.showToast(
-          msg: 'Added zone in the database!',
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
+        final snackBar = showCustomSnackbar(
+          text: 'New Plant added.',
+          colour: 'success',
         );
+
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       } catch (e) {
-        print(zone.id);
-        print(zone.zoneName);
-        print(zone.plantId);
-        await Fluttertoast.showToast(
-          msg: 'Error occurred while adding new zone',
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
+        final snackBar = showCustomSnackbar(
+          text: 'Error occurred while adding plant.',
+          colour: 'failure',
         );
+
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
 
       setState(() {
@@ -124,12 +121,12 @@ class _AddZonesScreenState extends State<AddZonesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.green.shade200,
+        backgroundColor: Colors.transparent,
         title: const Text('Add New Zone'),
         centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 30),
         child: Form(
             key: _formKey,
             child: Column(
@@ -137,17 +134,22 @@ class _AddZonesScreenState extends State<AddZonesScreen> {
               children: [
                 // select plant
                 DropdownButtonFormField<Plant>(
+                  dropdownColor: Theme.of(context).colorScheme.surface,
                   decoration: InputDecoration(
+                    fillColor: Theme.of(context).colorScheme.surface,
+                    filled: true,
                     labelText: 'Select Plant',
+                    floatingLabelBehavior: FloatingLabelBehavior.never,
+                    prefixIcon: const Icon(Icons.factory_rounded),
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 20,
                       vertical: 20,
                     ),
                     border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30)),
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(25)),
                   ),
                   borderRadius: BorderRadius.circular(20),
-                  // value: _selectedPlant,
                   items: plants
                       .map(
                         (plant) => DropdownMenuItem(
@@ -163,19 +165,26 @@ class _AddZonesScreenState extends State<AddZonesScreen> {
                     });
                   },
                 ),
-                const SizedBox(height: 30),
+
+                const SizedBox(height: 20),
+
+                // enter zone name
                 TextFormField(
                   onSaved: (value) => _enteredZoneName = value!,
-                  maxLength: 1000,
-                  decoration: const InputDecoration(
-                    label: Text('Enter Zone Name'),
-                    contentPadding: EdgeInsets.symmetric(
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.forklift),
+                    fillColor: Theme.of(context).colorScheme.surface,
+                    filled: true,
+                    floatingLabelBehavior: FloatingLabelBehavior.never,
+                    label: const Text('Enter Zone Name'),
+                    contentPadding: const EdgeInsets.symmetric(
                       horizontal: 20,
                       vertical: 20,
                     ),
-                    border: OutlineInputBorder(
+                    border: const OutlineInputBorder(
+                      borderSide: BorderSide.none,
                       borderRadius: BorderRadius.all(
-                        Radius.circular(30),
+                        Radius.circular(25),
                       ),
                     ),
                   ),
@@ -189,7 +198,64 @@ class _AddZonesScreenState extends State<AddZonesScreen> {
                     return null;
                   },
                 ),
-                ElevatedButton(
+
+                const SizedBox(height: 30),
+
+                // add zone button
+                InkWell(
+                  onTap: () {
+                    if (_isAdding) {
+                      return;
+                    }
+                    _addZone(context);
+                  },
+                  borderRadius: BorderRadius.circular(15),
+                  splashColor: Theme.of(context).primaryColor,
+                  child: Container(
+                    height: 50,
+                    width: 130,
+                    padding: const EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.black.withOpacity(0.77),
+                          Colors.black.withOpacity(0.85),
+                          Colors.black.withOpacity(1),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: _isAdding
+                        ? const Center(
+                            child: SizedBox(
+                              width: 15,
+                              height: 15,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                              ),
+                            ),
+                          )
+                        : Text(
+                            'Add Zone',
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyLarge!
+                                .copyWith(color: Colors.white),
+                          ),
+                  ),
+                ),
+              ],
+            )),
+      ),
+    );
+  }
+}
+
+/*
+ElevatedButton(
                   onPressed: _isAdding ? null : _addZone,
                   child: _isAdding
                       ? const SizedBox(
@@ -198,9 +264,4 @@ class _AddZonesScreenState extends State<AddZonesScreen> {
                           child: CircularProgressIndicator())
                       : const Text('Add Zone'),
                 ),
-              ],
-            )),
-      ),
-    );
-  }
-}
+*/

@@ -106,13 +106,13 @@ class _DeletePlantsScreenState extends State<DeletePlantsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.red.shade300,
+        backgroundColor: Colors.transparent,
         title: const Text('Delete Plants'),
         centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(
-          horizontal: 20,
+          horizontal: 40,
           vertical: 20,
         ),
         child: SingleChildScrollView(

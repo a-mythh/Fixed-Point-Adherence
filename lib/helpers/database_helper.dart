@@ -154,6 +154,18 @@ class DatabaseHelper {
     return dataGivenDate;
   }
 
+  // Count number of entries today
+  Future<int> countEntriesToday(String date) async {
+    final db = await _instance.db;
+    int? count = Sqflite.firstIntValue(await db.rawQuery(
+        'SELECT COUNT(*) FROM $dataTable WHERE datePicked = \'$date\''));
+
+    if (count == null) {
+      return 0;
+    } else {
+      return count;
+    }
+  }
 
   /// ***** CRUD Plant Table *****
 
@@ -170,6 +182,19 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>?> getPlants() async {
     final db = await _instance.db;
     return await db.query(plantTable, orderBy: 'plantName');
+  }
+
+  // Count number of plants
+  Future<int> countPlants() async {
+    final db = await _instance.db;
+    int? count = Sqflite.firstIntValue(
+        await db.rawQuery('SELECT COUNT(*) FROM $plantTable'));
+
+    if (count == null) {
+      return 0;
+    } else {
+      return count;
+    }
   }
 
   // Deleting plant data (also zones along with it)
@@ -201,6 +226,19 @@ class DatabaseHelper {
     );
   }
 
+  // Count number of zones
+  Future<int> countZones() async {
+    final db = await _instance.db;
+    int? count = Sqflite.firstIntValue(
+        await db.rawQuery('SELECT COUNT(*) FROM $zoneTable'));
+
+    if (count == null) {
+      return 0;
+    } else {
+      return count;
+    }
+  }
+
   // Deleting Zone Data
   Future<void> deleteZone(Zone zone) async {
     final db = await _instance.db;
@@ -225,13 +263,38 @@ class DatabaseHelper {
   }
 
   // Update Password of User
-  Future<void> updateAccountPassword(
-      String username, String password) async {
+  Future<void> updateAccountPassword(String username, String password) async {
     final db = await _instance.db;
     await db.rawUpdate(
       'UPDATE $userTable SET password = ? WHERE username = ?',
       [password, username],
     );
+  }
+
+  // Count number of admins
+  Future<int> countAdmins() async {
+    final db = await _instance.db;
+    int? count = Sqflite.firstIntValue(await db
+        .rawQuery('SELECT COUNT(*) FROM $userTable WHERE accType = \'admin\''));
+
+    if (count == null) {
+      return 0;
+    } else {
+      return count;
+    }
+  }
+
+  // Count number of users
+  Future<int> countUsers() async {
+    final db = await _instance.db;
+    int? count = Sqflite.firstIntValue(await db
+        .rawQuery('SELECT COUNT(*) FROM $userTable WHERE accType = \'user\''));
+
+    if (count == null) {
+      return 0;
+    } else {
+      return count;
+    }
   }
 
   // Getting all the Users' Details

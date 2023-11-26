@@ -10,18 +10,23 @@ class PlantItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(25)
+      ),
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: Padding(
         padding: const EdgeInsets.symmetric(
-          horizontal: 20,
+          horizontal: 30,
           vertical: 10,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              plant.plantName,
-              style: Theme.of(context).textTheme.bodyLarge,
+            Expanded(
+              child: Text(
+                plant.plantName,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
             ),
             IconButton(
               onPressed: () async {
@@ -32,6 +37,7 @@ class PlantItem extends StatelessWidget {
                     title: const Text('Are you sure?',
                         textAlign: TextAlign.center),
                     content: RichText(
+                      textAlign: TextAlign.center,
                       text: TextSpan(
                           style: Theme.of(context).textTheme.bodyLarge,
                           children: [
@@ -41,7 +47,7 @@ class PlantItem extends StatelessWidget {
                               text: plant.plantName,
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.orange,
+                                color: Colors.pink,
                               ),
                             ),
                             const TextSpan(text: ' plant.')
@@ -54,9 +60,13 @@ class PlantItem extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () => Navigator.pop(context, true),
-                        child: const Text(
+                        child: Text(
                           'Delete',
-                          style: TextStyle(color: Colors.red),
+                          style: Theme.of(context).textTheme.bodyLarge!.
+                          copyWith(
+                            color: Theme.of(context).colorScheme.error,
+                            fontWeight: FontWeight.bold
+                          ),
                         ),
                       ),
                     ],

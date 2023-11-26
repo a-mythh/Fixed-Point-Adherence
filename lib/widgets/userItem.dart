@@ -31,7 +31,7 @@ class _UserItemState extends State<UserItem> {
   @override
   void dispose() {
     passwordController.dispose();
-    
+
     super.dispose();
   }
 
@@ -46,28 +46,29 @@ class _UserItemState extends State<UserItem> {
           mainAxisSize: MainAxisSize.min,
           children: [
             RichText(
-              text:
-                  TextSpan(style: Theme.of(context).textTheme.bodyLarge, children: [
-                const TextSpan(text: 'Enter new password for '),
-                TextSpan(
-                  text: widget.user.username,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.orange,
-                  ),
-                ),
-                const TextSpan(text: '\'s account.')
-              ]),
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  children: [
+                    const TextSpan(text: 'Enter new password for '),
+                    TextSpan(
+                      text: widget.user.username,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.pink,
+                      ),
+                    ),
+                    const TextSpan(text: '\'s account.')
+                  ]),
             ),
             const SizedBox(height: 20),
             TextField(
               controller: passwordController,
               autocorrect: false,
               decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(15),
-                )
-              ),
+                  border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(25),
+              )),
             )
           ],
         ),
@@ -81,23 +82,25 @@ class _UserItemState extends State<UserItem> {
               Navigator.of(context).pop(passwordController.text);
               passwordController.text = '';
             },
-            child: const Text(
+            child: Text(
               'Change',
-              style: TextStyle(color: Colors.blueAccent),
+              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                    color: Colors.blue,
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
           ),
         ],
       ),
     );
-  
-    print(newPassword);
 
-    await AuthModule.resetPassword(user.username, newPassword);    
+    await AuthModule.resetPassword(user.username, newPassword);
   }
 
   @override
   Widget build(BuildContext context) {
     return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: Padding(
         padding: const EdgeInsets.symmetric(
@@ -109,9 +112,11 @@ class _UserItemState extends State<UserItem> {
           children: [
             SizedBox(
               width: 200,
-              child: Text(
-                widget.user.username,
-                style: Theme.of(context).textTheme.bodyLarge,
+              child: Expanded(
+                child: Text(
+                  widget.user.username,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
               ),
             ),
             IconButton(
@@ -131,6 +136,7 @@ class _UserItemState extends State<UserItem> {
                           title: const Text('Are you sure?',
                               textAlign: TextAlign.center),
                           content: RichText(
+                            textAlign: TextAlign.center,
                             text: TextSpan(
                                 style: Theme.of(context).textTheme.bodyLarge,
                                 children: [
@@ -141,7 +147,7 @@ class _UserItemState extends State<UserItem> {
                                     text: widget.user.username,
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.orange,
+                                      color: Colors.pink,
                                     ),
                                   ),
                                   const TextSpan(text: '\'s account.')
@@ -154,9 +160,15 @@ class _UserItemState extends State<UserItem> {
                             ),
                             TextButton(
                               onPressed: () => Navigator.pop(context, true),
-                              child: const Text(
+                              child: Text(
                                 'Delete',
-                                style: TextStyle(color: Colors.red),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(
+                                        color:
+                                            Theme.of(context).colorScheme.error,
+                                        fontWeight: FontWeight.bold),
                               ),
                             ),
                           ],

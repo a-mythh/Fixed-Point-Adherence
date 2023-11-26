@@ -1,5 +1,6 @@
 import 'package:Fixed_Point_Adherence/auth/auth_module.dart';
 import 'package:Fixed_Point_Adherence/models/user.dart';
+import 'package:Fixed_Point_Adherence/utility/CustomSnackbar.dart';
 import 'package:flutter/material.dart';
 
 class UserItem extends StatefulWidget {
@@ -94,7 +95,19 @@ class _UserItemState extends State<UserItem> {
       ),
     );
 
-    await AuthModule.resetPassword(user.username, newPassword);
+    bool status = await AuthModule.resetPassword(user.username, newPassword);
+
+    final snackbar = status
+        ? showCustomSnackbar(
+            text: 'Password changed successfully',
+            colour: 'success',
+          )
+        : showCustomSnackbar(
+            text: 'Error occurred while changing password.',
+            colour: 'failure',
+          );
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(snackbar);
   }
 
   @override

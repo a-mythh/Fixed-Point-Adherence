@@ -1,3 +1,4 @@
+import 'package:Fixed_Point_Adherence/utility/CustomSnackbar.dart';
 import 'package:flutter/material.dart';
 
 // import Authentication module
@@ -33,9 +34,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
     String password = _enteredPassword;
     String accType = _selectedAccType.toLowerCase();
 
-    AuthModule.signUp(username, password, accType);
+    bool status = await AuthModule.signUp(username, password, accType);
 
-    Navigator.pop(context);
+    final snackbar = status
+        ? showCustomSnackbar(
+            text: 'Account signed up successfully.',
+            colour: 'success',
+          )
+        : showCustomSnackbar(
+            text: 'Error occurred while signing up.',
+            colour: 'failure',
+          );
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(snackbar);
+
+    _formKey.currentState!.reset();
   }
 
   @override

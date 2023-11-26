@@ -11,7 +11,7 @@ class AuthModule {
   static final encrypter = encrypt.Encrypter(encrypt.AES(key));
 
   /// ***************** SIGN UP ******************
-  static Future<void> signUp(
+  static Future<bool> signUp(
       String username, String password, String accType) async {
     try {
       // encrypt the password
@@ -21,29 +21,12 @@ class AuthModule {
       );
 
       // insert new user details into the database
-      await databaseHelper
-          .insertRecordUser(username, encryptedPassword.base64, accType)
-          .then(
-        (value) async {
-          // show message on successful sign up
-          await Fluttertoast.showToast(
-            msg: 'User successfully signed up!',
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: Colors.green,
-            textColor: Colors.white,
-          );
-        },
-      );
+      await databaseHelper.insertRecordUser(
+          username, encryptedPassword.base64, accType);
+
+      return true;
     } catch (e) {
-      // show error on unsuccessful sign up
-      await Fluttertoast.showToast(
-        msg: 'User registration failed!',
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-      );
+      return false;
     }
   }
 
@@ -66,7 +49,6 @@ class AuthModule {
 
     // if user does not exist show error
     if (singleUserDetails!.isEmpty) {
-      
       // Fluttertoast.showToast(
       //   msg: 'Invalid credentials! Please try again.',
       //   toastLength: Toast.LENGTH_LONG,
@@ -144,47 +126,6 @@ class AuthModule {
     String username,
     String newPassword,
   ) async {
-    /*
-    Future<List<Map<String, dynamic>>?> data = DatabaseHelper().getRecordsSingleUser(username);
-    List<Map<String, dynamic>>? fetchedData = await data;
-
-    // check if user is present in database
-    if (fetchedData == null) {
-      // show error is user not present in database
-      Fluttertoast.showToast(
-        msg: 'Username is not registered!',
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-      );
-
-      return false;
-    }
-
-    var dataRow = fetchedData[0];
-    final storedPasswordBase64 = dataRow['password'];
-
-    // check if password present in database
-    if (storedPasswordBase64 != null) {
-      // decrypt the password
-      final storedPassword = encrypt.Encrypted.fromBase64(storedPasswordBase64);
-      final decryptedPassword =
-          encrypter.decrypt(storedPassword, iv: iv);
-
-      // check if old and new password same
-      if (newPassword == decryptedPassword) {
-        Fluttertoast.showToast(
-          msg: 'New password cannot be same as before!',
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-        );
-
-        return false;
-      }
-      */
     // if password correctly entered
     try {
       // encrypt and store the password
@@ -194,32 +135,11 @@ class AuthModule {
       );
 
       // update the user's password in the database
-      await databaseHelper
-          .updateAccountPassword(username, encryptedPassword.base64)
-          .then(
-        (value) async {
-          // show message on successful password change
-          await Fluttertoast.showToast(
-            msg: 'Password changed successfully!',
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: Colors.green,
-            textColor: Colors.white,
-          );
-        },
-      );
+      await databaseHelper.updateAccountPassword(
+          username, encryptedPassword.base64);
 
       return true;
     } catch (e) {
-      // show error on unsuccesful password change
-      await Fluttertoast.showToast(
-        msg: 'Password change unsuccessful!',
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-      );
-
       return false;
     }
   }

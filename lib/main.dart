@@ -41,7 +41,7 @@ class App extends StatelessWidget {
       theme: theme,
 
       // use the HomeScreen as the initial route
-      initialRoute: '/',
+      initialRoute: '/login',
 
       routes: {
         '/': (context) => const HomeScreen(),

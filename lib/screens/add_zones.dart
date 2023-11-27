@@ -88,7 +88,7 @@ class _AddZonesScreenState extends State<AddZonesScreen> {
         await databaseHelper.addNewZone(zone);
 
         final snackBar = showCustomSnackbar(
-          text: 'New Plant added.',
+          text: 'New Zone added.',
           colour: 'success',
         );
 
@@ -96,7 +96,7 @@ class _AddZonesScreenState extends State<AddZonesScreen> {
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       } catch (e) {
         final snackBar = showCustomSnackbar(
-          text: 'Error occurred while adding plant.',
+          text: 'Error occurred while adding zone.',
           colour: 'failure',
         );
 
@@ -112,8 +112,6 @@ class _AddZonesScreenState extends State<AddZonesScreen> {
       if (!context.mounted) {
         return;
       }
-
-      Navigator.of(context).pop();
     }
   }
 
@@ -170,6 +168,9 @@ class _AddZonesScreenState extends State<AddZonesScreen> {
 
                 // enter zone name
                 TextFormField(
+                  onTapOutside: (event) {
+                    FocusManager.instance.primaryFocus?.unfocus();
+                  },
                   onSaved: (value) => _enteredZoneName = value!,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.forklift),

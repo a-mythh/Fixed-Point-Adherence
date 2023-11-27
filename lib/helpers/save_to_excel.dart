@@ -12,8 +12,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 DatabaseHelper databaseHelper = DatabaseHelper();
 
-Map<String, dynamic> stylingSheet(Workbook workbook, Worksheet sheet) 
-{
+Map<String, dynamic> stylingSheet(Workbook workbook, Worksheet sheet) {
   // Add column names
   sheet.getRangeByName('A1').setText('Date');
   sheet.getRangeByName('B1').setText('Plant Name');
@@ -83,8 +82,7 @@ void addDataIntoSheet(
   Worksheet sheet,
   Map<String, dynamic> cellStyles,
   Map<String, dynamic> row,
-) 
-{
+) {
   Style cellStyle = cellStyles['cell style'];
   Style cellStyleOk = cellStyles['cell style OK'];
   Style cellStyleNotOk = cellStyles['cell style Not OK'];
@@ -113,12 +111,10 @@ void addDataIntoSheet(
   picture.height = 294;
   picture.width = 294;
   picture.rotation = 90;
-
 }
 
 // Excel Functionality
-class ExcelHelper 
-{
+class ExcelHelper {
   static final ExcelHelper _instance = ExcelHelper.internal();
   factory ExcelHelper() => _instance;
 
@@ -127,7 +123,14 @@ class ExcelHelper
   // create excel if it doesn't exist already
   Future<String?> _getExcelDirectory() async {
     try {
-      final excelDirectory = Directory('/storage/emulated/0/Documents/Fixed Point Adherence');
+      var status = await Permission.storage.status;
+      if (!status.isGranted) {
+        await Permission.storage.request();
+        await Permission.manageExternalStorage.request();
+      }
+
+      final excelDirectory =
+          Directory('/storage/emulated/0/Documents/Fixed Point Adherence');
 
       if (!await excelDirectory.exists()) {
         await excelDirectory.create(recursive: true);
@@ -135,6 +138,7 @@ class ExcelHelper
 
       return excelDirectory.path;
     } catch (e) {
+      print(e);
       return null;
     }
   }
@@ -145,18 +149,17 @@ class ExcelHelper
     return uint8List;
   }
 
-  Future<bool> saveTodaysDataToExcel() async
-  {
+  Future<bool> saveTodaysDataToExcel() async {
     String date = DateFormat('dd-MM-yyyy').format(DateTime.now());
 
     // retrieve the data
-    List<Map<String, dynamic>>? fetchedData = await DatabaseHelper().getRecordsDataByDate(date);
-    
+    List<Map<String, dynamic>>? fetchedData =
+        await DatabaseHelper().getRecordsDataByDate(date);
+
     // if data not present
     if (fetchedData == null) {
       return false;
     }
-
 
     /**** Getting permissions and storage location ****/
 
@@ -165,6 +168,7 @@ class ExcelHelper
 
     // if unable to create excel sheet
     if (excelDirectory == null) {
+      print('hello');
       return false;
     }
 
@@ -175,8 +179,6 @@ class ExcelHelper
       await Permission.manageExternalStorage.request();
     }
     final excelFilePath = path.join(excelDirectory, '$date.xlsx');
-  
-
 
     /*** Creating excel and adding a sheet with styles ***/
 
@@ -190,8 +192,7 @@ class ExcelHelper
     Map<String, dynamic> cellStyles = stylingSheet(workbook, sheet);
 
     // add data into the sheet
-    for (var row in fetchedData) 
-    {
+    for (var row in fetchedData) {
       String datePicked = row['datePicked'];
       String plantName = row['plantName'];
       String zoneName = row['zoneName'];
@@ -216,8 +217,6 @@ class ExcelHelper
 
       addDataIntoSheet(sheet, cellStyles, outputData);
     }
-    
-
 
     /*** Save and close the excel ***/
 
@@ -228,22 +227,20 @@ class ExcelHelper
 
     // Close the workbook
     workbook.dispose();
-
 
     // Show a success toast message
     return true;
   }
 
-  Future<bool> saveGivenDatesDataToExcel(String date) async
-  {
+  Future<bool> saveGivenDatesDataToExcel(String date) async {
     // retrieve the data
-    List<Map<String, dynamic>>? fetchedData = await DatabaseHelper().getRecordsDataByDate(date);
-    
+    List<Map<String, dynamic>>? fetchedData =
+        await DatabaseHelper().getRecordsDataByDate(date);
+
     // if data not present
     if (fetchedData == null) {
       return false;
     }
-
 
     /**** Getting permissions and storage location ****/
 
@@ -262,8 +259,6 @@ class ExcelHelper
       await Permission.manageExternalStorage.request();
     }
     final excelFilePath = path.join(excelDirectory, '$date.xlsx');
-  
-
 
     /*** Creating excel and adding a sheet with styles ***/
 
@@ -277,8 +272,7 @@ class ExcelHelper
     Map<String, dynamic> cellStyles = stylingSheet(workbook, sheet);
 
     // add data into the sheet
-    for (var row in fetchedData) 
-    {
+    for (var row in fetchedData) {
       String datePicked = row['datePicked'];
       String plantName = row['plantName'];
       String zoneName = row['zoneName'];
@@ -303,8 +297,6 @@ class ExcelHelper
 
       addDataIntoSheet(sheet, cellStyles, outputData);
     }
-    
-
 
     /*** Save and close the excel ***/
 
@@ -316,14 +308,12 @@ class ExcelHelper
     // Close the workbook
     workbook.dispose();
 
-
     return true;
   }
 
-
-  Future<void> saveToExcel() async 
-  {
-    Future<List<Map<String, dynamic>>?> data = DatabaseHelper().getRecordsData();
+  Future<void> saveToExcel() async {
+    Future<List<Map<String, dynamic>>?> data =
+        DatabaseHelper().getRecordsData();
 
     final excelDirectory = await _getExcelDirectory();
 
@@ -363,8 +353,7 @@ class ExcelHelper
 
     // Create or open the workbook
     final Workbook workbook = Workbook();
-    final sheetName =
-        'Date_${DateFormat('dd-MM-yyyy').format(DateTime.now())}';
+    final sheetName = 'Date_${DateFormat('dd-MM-yyyy').format(DateTime.now())}';
     Worksheet? sheet;
 
     // Check if the sheet already exists

@@ -81,6 +81,9 @@ class _AddPlantsScreenState extends State<AddPlantsScreen> {
               children: [
                 // enter plant name
                 TextFormField(
+                  onTapOutside: (event) {
+                    FocusManager.instance.primaryFocus?.unfocus();
+                  },
                   onSaved: (value) => _enteredPlantName = value!,
                   decoration: InputDecoration(
                     floatingLabelBehavior: FloatingLabelBehavior.never,

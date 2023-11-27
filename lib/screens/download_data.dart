@@ -51,7 +51,7 @@ class _DownloadDataScreenState extends State<DownloadDataScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Download Data'),
+        title: const Text('Save Data'),
         backgroundColor: Colors.transparent,
         centerTitle: true,
       ),
@@ -78,7 +78,7 @@ class _DownloadDataScreenState extends State<DownloadDataScreen> {
                           colour: 'success',
                         )
                       : showCustomSnackbar(
-                          text: 'Downloaded unsuccessful.',
+                          text: 'Download unsuccessful.',
                           colour: 'failure',
                         );
 
@@ -208,7 +208,7 @@ class _DownloadDataScreenState extends State<DownloadDataScreen> {
                               colour: 'success',
                             )
                           : showCustomSnackbar(
-                              text: 'Downloaded unsuccessful.',
+                              text: 'Download unsuccessful.',
                               colour: 'failure',
                             );
 

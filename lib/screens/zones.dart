@@ -86,12 +86,12 @@ class _ZoneScreenState extends State<ZoneScreen> {
                 splashColor: Theme.of(context).primaryColor,
                 child: Container(
                     height: 100,
-                    width: 170,
+                    width: 150,
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Colors.black.withOpacity(0.77),
+                          Colors.black.withOpacity(0.7),
                           Colors.black.withOpacity(0.85),
                           Colors.black.withOpacity(1),
                         ],
@@ -109,7 +109,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          'Add New Zone',
+                          'Add Zone',
                           style: Theme.of(context)
                               .textTheme
                               .bodyLarge!
@@ -135,12 +135,12 @@ class _ZoneScreenState extends State<ZoneScreen> {
                 splashColor: Theme.of(context).primaryColor,
                 child: Container(
                   height: 100,
-                  width: 170,
+                  width: 150,
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Colors.black.withOpacity(0.79),
+                        Colors.black.withOpacity(0.7),
                         Colors.black.withOpacity(0.85),
                         Colors.black.withOpacity(1),
                       ],

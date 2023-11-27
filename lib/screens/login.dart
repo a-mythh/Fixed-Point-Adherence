@@ -80,15 +80,8 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('Login'),
-      //   centerTitle: true,
-      //   backgroundColor: Colors.blue,
-      //   foregroundColor: Colors.white,
-      // ),
       body: Padding(
         padding: const EdgeInsets.symmetric(
-          vertical: 10,
           horizontal: 30,
         ),
         child: Column(
@@ -110,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
               'Login',
               style: Theme.of(context)
                   .textTheme
-                  .displaySmall!
+                  .headlineMedium!
                   .copyWith(color: Theme.of(context).colorScheme.primary),
             ),
             const SizedBox(height: 15),
@@ -209,43 +202,43 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(height: 18),
 
             // login button
-            ElevatedButton(
-              style: ButtonStyle(
-                shape: MaterialStateProperty.all(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                      25,
+            SizedBox(
+              width: 400,
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  shape: MaterialStateProperty.all(
+                    RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25)),
+                  ),
+                  backgroundColor: MaterialStateProperty.all(
+                    Theme.of(context).colorScheme.primaryContainer,
+                  ),
+                  foregroundColor: MaterialStateProperty.all(
+                    Theme.of(context).colorScheme.onPrimaryContainer,
+                  ),
+                  textStyle: MaterialStateProperty.all(
+                    Theme.of(context).textTheme.titleLarge,
+                  ),
+                  padding: MaterialStateProperty.all(
+                    const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 20,
                     ),
                   ),
                 ),
-                backgroundColor: MaterialStateProperty.all(
-                  Theme.of(context).colorScheme.primaryContainer,
-                ),
-                foregroundColor: MaterialStateProperty.all(
-                  Theme.of(context).colorScheme.onPrimaryContainer,
-                ),
-                textStyle: MaterialStateProperty.all(
-                  Theme.of(context).textTheme.titleLarge,
-                ),
-                padding: MaterialStateProperty.all(
-                  const EdgeInsets.symmetric(
-                    horizontal: 140,
-                    vertical: 20,
-                  ),
-                ),
+                onPressed: _onLoginPressed,
+                child: _isLoading
+                    ? const Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 15,
+                          vertical: 0,
+                        ),
+                        child: CircularProgressIndicator(
+                          strokeCap: StrokeCap.round,
+                        ),
+                      )
+                    : const Text('Log in'),
               ),
-              onPressed: _onLoginPressed,
-              child: _isLoading
-                  ? const Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 15,
-                        vertical: 0,
-                      ),
-                      child: CircularProgressIndicator(
-                        strokeCap: StrokeCap.round,
-                      ),
-                    )
-                  : const Text('Log in'),
             ),
           ],
         ),

@@ -79,7 +79,7 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(
-          horizontal: 30,
+          horizontal: 20,
           vertical: 20,
         ),
         child: Column(

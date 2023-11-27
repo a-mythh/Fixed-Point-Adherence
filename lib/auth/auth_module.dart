@@ -1,6 +1,6 @@
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:Fixed_Point_Adherence/helpers/database_helper.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+// import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 
 DatabaseHelper databaseHelper = DatabaseHelper();
@@ -93,13 +93,13 @@ class AuthModule {
         // login as administrative user
         else if (accType == 'admin') {
           // show message on successful login
-          Fluttertoast.showToast(
-            msg: 'Successfully Logged In!',
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: Colors.green,
-            textColor: Colors.white,
-          );
+          // Fluttertoast.showToast(
+          //   msg: 'Successfully Logged In!',
+          //   toastLength: Toast.LENGTH_LONG,
+          //   gravity: ToastGravity.BOTTOM,
+          //   backgroundColor: Colors.green,
+          //   textColor: Colors.white,
+          // );
 
           result['isLogin'] = true;
           result['userType'] = 'admin';

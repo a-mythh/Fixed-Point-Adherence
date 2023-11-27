@@ -60,9 +60,9 @@ class _AdminPageState extends State<AdminScreen> {
               image: AssetImage('assets/images/wipro_black_logo.png'),
             ),
           ),
-
+      
           const SizedBox(height: 100),
-
+      
           // show count of entries
           Container(
             alignment: Alignment.center,
@@ -101,9 +101,9 @@ class _AdminPageState extends State<AdminScreen> {
               ],
             ),
           ),
-
+      
           const SizedBox(height: 80),
-
+      
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -117,13 +117,13 @@ class _AdminPageState extends State<AdminScreen> {
                 borderRadius: BorderRadius.circular(15),
                 splashColor: Theme.of(context).primaryColor,
                 child: Container(
-                  height: 120,
-                  width: 180,
+                  height: 125,
+                  width: 150,
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Colors.black.withOpacity(0.77),
+                        Colors.black.withOpacity(0.7),
                         Colors.black.withOpacity(0.85),
                         Colors.black.withOpacity(1),
                       ],
@@ -141,7 +141,7 @@ class _AdminPageState extends State<AdminScreen> {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        'Download Data',
+                        'Save Data',
                         textAlign: TextAlign.center,
                         style: Theme.of(context)
                             .textTheme
@@ -152,9 +152,9 @@ class _AdminPageState extends State<AdminScreen> {
                   ),
                 ),
               ),
-
+      
               const SizedBox(width: 20),
-
+      
               // delete data button
               InkWell(
                 onTap: () async {
@@ -177,13 +177,13 @@ class _AdminPageState extends State<AdminScreen> {
                 borderRadius: BorderRadius.circular(15),
                 splashColor: Theme.of(context).primaryColor,
                 child: Container(
-                  height: 120,
-                  width: 180,
+                  height: 125,
+                  width: 150,
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Colors.black.withOpacity(0.77),
+                        Colors.black.withOpacity(0.7),
                         Colors.black.withOpacity(0.85),
                         Colors.black.withOpacity(1),
                       ],
@@ -225,91 +225,3 @@ class _AdminPageState extends State<AdminScreen> {
     );
   }
 }
-
-/*
-// download data button
-                InkWell(
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const DownloadDataScreen()));
-                  },
-                  borderRadius: BorderRadius.circular(15),
-                  splashColor: Theme.of(context).primaryColor,
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.green.withOpacity(0.4),
-                          Colors.green.withOpacity(0.9)
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: downloaded
-                        ? const Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.save_alt_rounded,
-                              ),
-                              Text('Download Data'),
-                            ],
-                          )
-                        : const Center(
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              backgroundColor: Colors.green,
-                            ),
-                          ),
-                  ),
-                ),
-
-                // delete data button
-                InkWell(
-                  onTap: () async {
-                    setState(() {
-                      deleted = false;
-                    });
-                    await deleteOneWeekOldData();
-                    setState(() {
-                      deleted = true;
-                    });
-                  },
-                  borderRadius: BorderRadius.circular(15),
-                  splashColor: Theme.of(context).primaryColor,
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.red.withOpacity(0.4),
-                          Colors.red.withOpacity(0.9)
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: deleted
-                        ? const Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.delete_rounded,
-                              ),
-                              Text('Delete Data'),
-                            ],
-                          )
-                        : const Center(
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              backgroundColor: Colors.red,
-                            ),
-                          ),
-                  ),
-                ),
-
-*/

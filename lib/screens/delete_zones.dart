@@ -165,17 +165,19 @@ class _DeleteZonesScreenState extends State<DeleteZonesScreen> {
 
             const SizedBox(height: 30),
 
-            SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ...zones.map(
-                    (zone) => ZoneItem(
-                      zone: zone,
-                      deleteZone: _deleteZone,
-                    ),
-                  )
-                ],
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ...zones.map(
+                      (zone) => ZoneItem(
+                        zone: zone,
+                        deleteZone: _deleteZone,
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ],

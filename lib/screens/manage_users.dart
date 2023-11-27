@@ -123,19 +123,21 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
             const SizedBox(height: 30),
 
             // display accounts present in that given account type
-            SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ...users.map(
-                    (user) => UserItem(
-                      user: user,
-                      deleteUser: _deleteUser,
-                      disabled:
-                          user.username == widget.currentUser ? true : false,
-                    ),
-                  )
-                ],
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ...users.map(
+                      (user) => UserItem(
+                        user: user,
+                        deleteUser: _deleteUser,
+                        disabled:
+                            user.username == widget.currentUser ? true : false,
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ],

@@ -123,13 +123,10 @@ class _UserItemState extends State<UserItem> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            SizedBox(
-              width: 200,
-              child: Expanded(
-                child: Text(
-                  widget.user.username,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
+            Expanded(
+              child: Text(
+                widget.user.username,
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
             ),
             IconButton(

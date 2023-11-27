@@ -121,7 +121,7 @@ class _LoginPageState extends State<LoginPage> {
                     // username
                     TextFormField(
                       onSaved: (value) {
-                        _enteredUsername = value!;
+                        _enteredUsername = value!.trim();
                       },
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
@@ -157,7 +157,7 @@ class _LoginPageState extends State<LoginPage> {
                     // password
                     TextFormField(
                       onSaved: (value) {
-                        _enteredPassword = value!;
+                        _enteredPassword = value!.trim();
                       },
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {

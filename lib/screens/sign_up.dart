@@ -75,7 +75,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   return null;
                 },
                 onSaved: (value) {
-                  _enteredUsername = value!;
+                  _enteredUsername = value!.trim();
                 },
                 autocorrect: false,
                 keyboardType: TextInputType.name,
@@ -106,7 +106,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   return null;
                 },
                 onSaved: (value) {
-                  _enteredPassword = value!;
+                  _enteredPassword = value!.trim();
                 },
                 autocorrect: false,
                 keyboardType: TextInputType.name,

@@ -20,6 +20,8 @@ class AuthModule {
         iv: iv,
       );
 
+      username = username.trim();
+
       // insert new user details into the database
       await databaseHelper.insertRecordUser(
           username, encryptedPassword.base64, accType);

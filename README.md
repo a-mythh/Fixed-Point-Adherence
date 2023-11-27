@@ -1,13 +1,5 @@
-# Fixed Point Adherence
+## Installation
 
-<div align="center">
-<h3> Data Entry Form </h3>
-<img src="https://i.imgur.com/JpKwF2l.jpg" alt="drawing" width="200"/>
-</div>
+### Android
 
-<br>
-<br>
-<div align="center">
-<h3> Preview Data </h3>
-<img src="https://i.imgur.com/Cf7VdKI.jpg" alt="drawing" width="200"/>
-</div>
+- [Android App](https://github.com/a-mythh/fpa-wipro/raw/amit-branch/installers/Fixed%20Point%20Adherence.apk)

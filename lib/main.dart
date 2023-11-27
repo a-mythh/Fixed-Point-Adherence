@@ -1,38 +1,55 @@
 import 'package:flutter/material.dart';
-import 'package:path_validation/data_entry_form.dart';
-// import 'package:path_validation/form_input.dart';
-// import 'package:path_validation/input_form.dart';
-// import 'package:path_validation/input_form.dart';
 
+// database
+import 'package:Fixed_Point_Adherence/helpers/database_helper.dart';
 
-void main() {
-  runApp(
-    MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const HomePage(),
-    ),
-  );
+// screens
+import 'package:Fixed_Point_Adherence/screens/home.dart';
+import 'package:Fixed_Point_Adherence/screens/login.dart';
+import 'package:Fixed_Point_Adherence/screens/sign_up.dart';
+import 'package:Fixed_Point_Adherence/screens/admin.dart';
+import 'package:Fixed_Point_Adherence/screens/data_entry.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // initialize database
+  await DatabaseHelper().initDatabase();
+
+  runApp(const App());
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+final theme = ThemeData(
+  useMaterial3: true,
+  colorScheme: ColorScheme.fromSeed(
+    seedColor: Colors.amber,
+    background: const Color.fromARGB(255, 249, 236, 223),
+    primary: Colors.black,
+    primaryContainer: const Color.fromARGB(255, 128, 209, 217),
+  ),
+  textTheme: GoogleFonts.poppinsTextTheme(),
+);
+
+class App extends StatelessWidget {
+  const App({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Upload Data'),
-        centerTitle: true,
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-      ),
-      // body: const InputForm(),
-      // body: const PictureInput(),
-      body: const DataEntryForm(),
+  Widget build(context) {
+    return MaterialApp(
+      title: 'Fixed Point Adherence',
+      theme: theme,
+
+      // use the HomeScreen as the initial route
+      initialRoute: '/login',
+
+      routes: {
+        '/': (context) => const HomeScreen(),
+        '/login': (context) => const LoginPage(),
+        '/home': (context) => const DataEntryScreen(),
+        // '/admin': (context) => const AdminPage(),
+        '/new_user': (context) => const SignUpScreen(),
+      },
     );
   }
 }

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'dart:io';
 
 class ZoneDetails {
@@ -10,5 +9,13 @@ class ZoneDetails {
   late File image;
 
   late String pathType;
+
+}
+
+class NewLocationDetails {
+
+  late String plantName;
+  late String zoneName;
+  late String zoneLeader;
 
 }
